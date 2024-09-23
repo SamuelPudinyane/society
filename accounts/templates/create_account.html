@@ -1,3 +1,6 @@
+{% from 'bootstrap5/form.html' import render_field %}
+{% from 'bootstrap5/utils.html' import render_messages %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +12,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../static/css/index2.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index2.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -148,19 +151,19 @@
     <section class="account_section">
         <div class="holder">
             <div class="top-nav">
-                <div class="logo"><img src="../static/images/2new logo.png" alt="" height="70px" width="200px"></div>
+                <div class="logo"><img src="{{ url_for('static', filename='images/2new logo.png')}}" alt="" height="70px" width="200px"></div>
 
                 <div class="nav-icons">
                     <div class="location">
-                        <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
+                        <img src="{{ url_for('static', filename='images/Group 261.png')}}" alt="Location Icon" width="30px">
                         <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
                     </div>
                     <div class="phone">
-                        <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                        <img src="{{ url_for('static', filename='images/Group 244.png')}}" alt="Phone Icon" width="30px"><br>
                         <span>(+27) 87 820 0840</span>
                     </div>
                     <div class="email">
-                        <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
+                        <img src="{{ url_for('static', filename='images/Group 257.png')}}" alt="Email Icon" width="30px">
                         <span>systemsadmin@jbs.ac.za</span>
                     </div>
                 </div>
@@ -236,71 +239,40 @@
               <div class="card-header text-center">
                 <h3>Sign Up</h3>
               </div>
-              
               <div class=" card-body">
-                <form  method="POST">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <div class="mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter your first name" required>
+                <form  action="{{ url_for('accounts.register') }}" method="post">
+                  {{ render_messages() }}
+                  {{ form.csrf_token() }}
+                  {{ form.hidden_tag() }}
+                  <div class="row">
+                    <div class="col">
+                      {{ render_field(form.first_name, placeholder="First name") }}
+                    </div>
+                    <div class="col">
+                      {{ render_field(form.last_name, placeholder="Last name") }}
+                    </div>
                   </div>
-                  <div class="mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your last name" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="dob" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="dob" name="dob" required>
-                  </div>
-                  <div class="mb-3">
-                    <div class="form-group">
-          <label for="gender">Gender:</label>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="gender" id="male" value="male">
-            <label class="form-check-label" for="male">Male</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="gender" id="female" value="female">
-            <label class="form-check-label" for="female">Female</label>
-          </div>
-        </div>
-                  </div>
-                  <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="occupation" class="form-label">Occupation</label>
-                    <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Enter your occupation">
-                  </div>
-                  <div class="mb-3">
-                    <label for="contactDetails" class="form-label">Contact Details</label>
-                    <input type="text" class="form-control" id="contactDetails" name="contactDetails" placeholder="Enter your contact details">
-                  </div>
-                  <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter your address">
-                  </div>
-                  <div class="mb-3">
-                    <label for="postalCode" class="form-label">Postal Code</label>
-                    <input type="text" class="form-control" id="postalCode" name="postalCode" placeholder="Enter your postal code">
-                  </div>
-                  <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Passwords must match and contain at least one number, one uppercase and one lowercase letter, and be at least 6 characters long">
-                  </div>
-                  
-                  <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="role" class="form-label">Role</label>
-                    <input type="text" class="form-control" id="role" name="role" placeholder="Enter your role" required>
-                  </div>
-                      <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Sign Up</button>
-                      </div>
+                  {{ render_field(form.email, placeholder="Enter your email") }}
+                  {{ render_field(form.date_of_birth, placeholder="Date of birth") }}
+                  {{ render_field(form.gender, placeholder='Select gender')}}
+                  {{ render_field(form.occupation, placeholder="Occupation") }}
+                  {{ render_field(form.contact_number, placeholder="Contact number") }}
+                <div class="row">
+                    <div class="col">
+                      {{ render_field(form.address, placeholder="Address") }}
+                    </div>
+                    <div class="col">
+                      {{ render_field(form.postal_code, placeholder="Postal code") }}
+                    </div>
+                </div>
+                {{ render_field(form.role, placeholder="Choose your role") }}
+                {{ render_field(form.password, placeholder="Enter your password") }}
+                {{ render_field(form.remember) }}
+                {{ render_field(form.submit, class="w-100") }}
+
+                <p class="text-center mt-3">
+                  Have an account? <a href="{{ url_for('accounts.login') }}" class="text-decoration-none">Log In</a>
+                </p>
                     </form>
                   </div>
             </div>
@@ -323,7 +295,7 @@
             <div class="footer">
                 <div class="column">
                     <h4></h4>
-                    <img src="../static/images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
+                    <img src="./images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
                     <div class="footer-iconz">
                         <i class="fab fa-facebook-f"></i>
                         <i class="fab fa-instagram"></i>
@@ -335,7 +307,7 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#">Virtual Reality</a></li>
-                        <li><a href="{{url_for('accounts.innovation')}}">Innovation</a></li>
+                        <li><a href="#">Innovation</a></li>
                         <li><a href="#">STEM Education</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
@@ -372,7 +344,9 @@
             </div>
         </div>
     </section>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.en-GB.min.js"></script>
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 

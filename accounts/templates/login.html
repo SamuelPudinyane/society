@@ -1,3 +1,8 @@
+{% from 'bootstrap5/form.html' import render_field %}
+{% from 'bootstrap5/utils.html' import render_messages %}
+
+{% block body %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../static/css/index2.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index2.css') }}">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -147,19 +152,19 @@
 <body>
         <div class="holder">
             <div class="top-nav">
-                <div class="logo"><img src="../static/images/2new logo.png" alt="" height="70px" width="200px"></div>
+                <div class="logo"><img src="./images/2new logo.png" alt="" height="70px" width="200px"></div>
 
                 <div class="nav-icons">
                     <div class="location">
-                        <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
+                        <img src="./images/Group 261.png" alt="Location Icon" width="30px">
                         <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
                     </div>
                     <div class="phone">
-                        <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                        <img src="./images/Group 244.png" alt="Phone Icon" width="30px"><br>
                         <span>(+27) 87 820 0840</span>
                     </div>
                     <div class="email">
-                        <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
+                        <img src="./images/Group 257.png" alt="Email Icon" width="30px">
                         <span>systemsadmin@jbs.ac.za</span>
                     </div>
                 </div>
@@ -216,21 +221,17 @@
                 <h2 class="text-center mb-4">Login</h2>
             </div>
             <div class="card-body">
-                <form action="/login" method="POST">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="form-group">
-                      <input type="email" name="email" class="form-control" placeholder="Email" required="required">
-                    </div>
-                    <div class="form-group">
-                      <input type="password" name="password" class="form-control" placeholder="Password" required="required">
-                    </div>
-                    <br>
-                    <div class="form-group">
-                      <button type="submit" class="btn btn-primary btn-block">Log in</button>
-                    </div>
+                <form action="{{ url_for('accounts.login') }}" method="post">
+                    {{ render_messages() }}
+                    {{ form.csrf_token() }}
+                    {{ render_field(form.email, placeholder="Enter email", autofocus="true") }}
+                    {{ render_field(form.password, placeholder="Enter your password") }}
+                    {{ render_field(form.remember, checked="true") }}
+                    {{ render_field(form.submit, class="w-100 mb-3") }}
+
                     <div class="clearfix">
-                      <label class="float-left"><i><a href="{{url_for('reset_password_page')}}">Forgot Password?</a></i></label>
-                      <label class="float-right"><i><a href="{{url_for('accounts.register')}}">Create new account</a></i></label>
+                      <label class="float-left"><i><a href="{{ url_for('accounts.forgot_password') }}">Forgot Password?</a></i></label>
+                      <label class="float-right"><i><a href="{{ url_for('accounts.register') }}">Create new account</a></i></label>
                     </div>        
                   </form>
             </div>
@@ -253,7 +254,7 @@
             <div class="footer">
                 <div class="column">
                     <h4></h4>
-                    <img src="../static/images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
+                    <img src="./images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
                     <div class="footer-iconz">
                         <i class="fab fa-facebook-f"></i>
                         <i class="fab fa-instagram"></i>
@@ -265,7 +266,7 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#">Virtual Reality</a></li>
-                        <li><a href="{{url_for('accounts.innovation')}}">Innovation</a></li>
+                        <li><a href="#">Innovation</a></li>
                         <li><a href="#">STEM Education</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
@@ -361,3 +362,4 @@
 </body>
 
 </html>
+{% endblock %}
