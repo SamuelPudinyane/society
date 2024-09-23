@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="index2.css">
+    <link rel="stylesheet" href="../static/css/index2.css">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -149,19 +149,19 @@
     <section class="services_section">
         <div class="holder">
             <div class="top-nav">
-                <div class="logo"><img src="./images/2new logo.png" alt="" height="70px" width="200px"></div>
+                <div class="logo"><img src="../static/images/2new logo.png" alt="" height="70px" width="200px"></div>
 
                 <div class="nav-icons">
                     <div class="location">
-                        <img src="./images/Group 261.png" alt="Location Icon" width="30px">
+                        <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
                         <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
                     </div>
                     <div class="phone">
-                        <img src="./images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                        <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
                         <span>(+27) 87 820 0840</span>
                     </div>
                     <div class="email">
-                        <img src="./images/Group 257.png" alt="Email Icon" width="30px">
+                        <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
                         <span>systemsadmin@jbs.ac.za</span>
                     </div>
                 </div>
@@ -186,13 +186,13 @@
                             <!-- <img src="./images/2new logo.png" alt="" width="110px" height="5px"> -->
                         </div>
                         <div class="centre_nav">
-                            <a href="./index2.html">Home</a>
+                            <a href="{{url_for('accounts.index')}}">Home</a>
                             <!-- <a href="./About.html">About Us</a> -->
                             <a href="./teachingnotes.html">Virtual Reality</a>
                             <a href="./resources.html">SMEs</a>
                             <a href="./contributors.html">Innovation</a>
                             <a href="./blog.html">Careers</a>
-                            <a class="login" href="./login.html">LOGIN</a>
+                            <a class="login" href="{{url_for('accounts.login')}}">LOGIN</a>
                         </div>
                         
                     </div>
@@ -214,7 +214,7 @@
                 <div class="nav-links">
                     <div class="right-links">
                         <div class="centre_nav">
-                            <a href="./index2.html">Home</a>
+                            <a href="{{url_for('accounts.index')}}">Home</a>
                             <a href="./teachingnotes.html">Agri-ecommerce</a>
                             <a href="./resources.html">STEM Education</a>
                             <a href="./contributors.html">Survey</a>
@@ -263,22 +263,22 @@
 
                 <div class="features-wrapper">
                     <div class="feature-item feature1">
-                        <img src="./images/Bookstore (1).png" alt="Icon 1">
+                        <img src="../static/images/Bookstore (1).png" alt="Icon 1">
                         <h4>SMMEs</h4>
                         <p>Explore content on SMMEs</p>
                     </div>
                     <div class="feature-item feature2">
-                        <img src="./images/apple-vision-pro-users-male (1).png" alt="Icon 2">
+                        <img src="../static/images/apple-vision-pro-users-male (1).png" alt="Icon 2">
                         <h4>Virtual Reality</h4>
                         <p>Dive into the world of Virtual Reality</p>
                     </div>
                     <div class="feature-item feature3">
-                        <img src="./images/Templates.png" alt="Icon 3">
+                        <img src="../static/images/Templates.png" alt="Icon 3">
                         <h4>Survay</h4>
                         <p>Discover insights through Surveys</p>
                     </div>
                     <div class="feature-item feature4">
-                        <img src="./images/window-workspace.png" alt="Icon 4">
+                        <img src="../static/images/window-workspace.png" alt="Icon 4">
                         <h4>Innovation</h4>
                         <p>Explore content on Innovation Platforms</p>
                     </div>
@@ -354,7 +354,7 @@
             <div class="footer">
                 <div class="column">
                     <h4></h4>
-                    <img src="./images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
+                    <img src="../static/images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
                     <div class="footer-iconz">
                         <i class="fab fa-facebook-f"></i>
                         <i class="fab fa-instagram"></i>
@@ -366,7 +366,7 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#">Virtual Reality</a></li>
-                        <li><a href="#">Innovation</a></li>
+                        <li><a href="{{url_for('accounts.innovation')}}">Innovation</a></li>
                         <li><a href="#">STEM Education</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>

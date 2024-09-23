@@ -432,6 +432,12 @@ def profile() -> Response:
 
 
 
+@accounts.route('/innovation')
+def innovation():
+    # Redirect to another application running on a different server or port
+    return redirect('http://127.0.0.1:8000')
+
+
 @app.route("/session")
 def fetch_user_session_data():
     email=session["email"]
