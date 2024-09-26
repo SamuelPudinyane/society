@@ -8,7 +8,22 @@ body {
     height: 100vh;
     overflow: hidden;
   }
-  
+  .profile {
+    width: 100%;
+  }
+  .profile_details{
+    display: block;
+  }
+  .profile_details col{
+    width: 100%;
+  }
+  .card-header{
+    background-color: rgb(2, 27, 43);
+    color: white;
+    text-align: center;
+    align-items: center;
+  }
+ 
   .video-background video {
     position: absolute;
     top: 50%;
@@ -217,7 +232,8 @@ body {
   .search-container {
     position: relative;
     width: 290px;
-    height: 21px;
+    height: max-content;
+    margin-bottom: 4px;
     padding-right: 170px;
   }
   
@@ -237,7 +253,7 @@ body {
     top: 0;
     right: 0;
     width: 30px;
-    height: 32px;
+    height: 30px;
     margin-top: 0px;
     background-color: #10144A;
     /* Dark blue background */
@@ -633,6 +649,14 @@ body {
     width: 100%;
   }
   
+  .anchor{
+    text-align: center;
+    text-decoration: none;
+
+  }
+  .anchor:hover{
+    font-weight: bold;
+  }
   
   .features-wrapper {
     display: flex;

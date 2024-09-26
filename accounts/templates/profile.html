@@ -1,10 +1,9 @@
 {% from 'bootstrap5/form.html' import render_field %}
 {% from 'bootstrap5/utils.html' import render_messages %}
-{% block title %}My Profile{% endblock %}
-
+{% extends "base.html" %}
 {% block body %}
 
-<div class="container my-4">
+<div class="profile container my-4">
     {{ render_messages(dismissible=True, dismiss_animate=True) }}
     <div class="card shadow-sm border-0">
         <div class="row">
@@ -22,14 +21,14 @@
                 </div>
             </div>
             <div class="col-md-7 col-lg-7">
-                <div class="p-3 py-4">
+                <div class="card">
                     <form action="{{ url_for('accounts.profile') }}" method="post" enctype="multipart/form-data">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="text-right">Profile Detail</h2>
+                        <div class="login-card card-header d-flex justify-content-between align-items-center mb-3">
+                            <h2>Profile Detail</h2>
                         </div>
                         {{ form.csrf_token() }}
-                        <div class="form-outline">
-                            <div class="row">
+                        <div class="card-body p-2 form-outline">
+                            <div class="profile_details">
                                 <div class="col">
                                     {{ render_field(form.first_name, placeholder="First name",
                                     value=current_user.first_name) }}
@@ -56,14 +55,14 @@
                                 </div>    
                             </div>
                         </div>
-                        <div class="form-outline">
+                        <div class="form-outline m-2">
                             {{ render_field(form.profile_image) }}
                         </div>
-                        <div class="form-outline mb-3">
+                        <div class="form-outline m-2">
                             {{ render_field(form.about, id="bio", placeholder="Enter about yourself",
                             style="height: 6rem;") }}
                         </div>
-                        <div class="d-flex mt-4">
+                        <div class="d-flex m-2">
                             {{ render_field(form.submit, class="w-100") }}
                         </div>
                         <script>

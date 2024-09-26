@@ -29,7 +29,7 @@ from datetime import datetime, timedelta
 import re
 import os
 
-
+import json
 """
 This accounts blueprint defines routes and templates related to user management
 within our application.
@@ -123,8 +123,9 @@ def login() -> Response:
 
             # Log the user in and set the session to remember the user for (15 days)
             login_user(user, remember=True, duration=timedelta(days=15))
-            session["email"]=email
+            
             flash("You are logged in successfully.", "success")
+            session['email']=email
             return redirect(url_for("accounts.index"))
 
         return redirect(url_for("accounts.login"))
@@ -412,11 +413,11 @@ def profile() -> Response:
                 user.address = address
                 user.postal_code = postal_code
                 user.profile.bio = about
-
+                
                 # Handle profile image upload if provided.
                 if profile_image and getattr(profile_image, "filename"):
                     user.profile.set_avator(profile_image)
-
+                
                 # Commit changes to the database.
                 db.session.commit()
             except Exception as e:
@@ -434,8 +435,22 @@ def profile() -> Response:
 
 @accounts.route('/innovation')
 def innovation():
+    email=session.get('email')
+    print(email)
+    if not email:
+        return redirect(url_for('accounts.login'))
     # Redirect to another application running on a different server or port
-    return redirect('http://127.0.0.1:8000')
+    user = User.get_user_by_email(email=email)
+    print(user.id)
+    user_id=user.id
+    profile=Profile.profile(user_id)
+    user=user.to_dict()
+    user['bio']=profile['bio']
+    user['avator']=profile['avator']
+    print(profile)
+    
+    print("user details ",user)
+    return redirect(f'http://127.0.0.1:8000?user={json.dumps(user)}')
 
 
 @app.route("/session")

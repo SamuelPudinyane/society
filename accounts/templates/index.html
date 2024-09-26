@@ -192,7 +192,8 @@
                             <a href="./resources.html">SMEs</a>
                             <a href="./contributors.html">Innovation</a>
                             <a href="./blog.html">Careers</a>
-                            <a class="login" href="{{url_for('accounts.logout')}}">LOGOUT</a>
+                            <a href="{{url_for('accounts.profile')}}">Update Profile</a>
+                            <a href="{{url_for('accounts.logout')}}">LOGOUT</a>
                         </div>
                         
                     </div>
@@ -263,24 +264,32 @@
 
                 <div class="features-wrapper">
                     <div class="feature-item feature1">
+                       <a class="anchor" href="#">
                         <img src="../static/images/Bookstore (1).png" alt="Icon 1">
                         <h4>SMMEs</h4>
                         <p>Explore content on SMMEs</p>
+                       </a>
                     </div>
                     <div class="feature-item feature2">
-                        <img src="../static/images/apple-vision-pro-users-male (1).png" alt="Icon 2">
+                        <a class="anchor" href="#">
+                            <img src="../static/images/apple-vision-pro-users-male (1).png" alt="Icon 2">
                         <h4>Virtual Reality</h4>
                         <p>Dive into the world of Virtual Reality</p>
+                        </a>
                     </div>
                     <div class="feature-item feature3">
-                        <img src="../static/images/Templates.png" alt="Icon 3">
+                        <a class="anchor" href="#">
+                            <img src="../static/images/Templates.png" alt="Icon 3">
                         <h4>Survay</h4>
                         <p>Discover insights through Surveys</p>
+                        </a>
                     </div>
                     <div class="feature-item feature4">
-                        <img src="../static/images/window-workspace.png" alt="Icon 4">
+                        <a class="anchor" href="{{url_for('accounts.innovation')}}">
+                            <img src="../static/images/window-workspace.png" alt="Icon 4">
                         <h4>Innovation</h4>
                         <p>Explore content on Innovation Platforms</p>
+                        </a>
                     </div>
                 </div>
                 <!-- </div> -->
@@ -366,7 +375,7 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#">Virtual Reality</a></li>
-                        <li><a href="{{url_for('accounts.innovation')}}">Innovation</a></li>
+                        <li><a href="#">Innovation</a></li>
                         <li><a href="#">STEM Education</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
                         <li><a href="#">Agri-ecommerce</a></li>
