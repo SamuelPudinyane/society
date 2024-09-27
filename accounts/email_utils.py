@@ -36,6 +36,7 @@ def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text):
 
     try:
         # Flask-Mail handles connection automatically
+        mail.connect()
         mail.send(message)
         print("Email sent successfully!")  # Optional, for confirmation
     except SMTPException as e:
@@ -60,7 +61,7 @@ def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text):
 def send_confirmation_mail(user: User = None):
     subject: str = "Verify Your Account"
 
-    token: str = user.generate_token()
+    token: str = user.generate_token(salt=current_app.config["ACCOUNT_CONFIRM_SALT"])
 
     verification_link: str = get_full_url(
         url_for("accounts.confirm_account", token=token)
@@ -78,7 +79,7 @@ def send_confirmation_mail(user: User = None):
 def send_reset_password(user: User = None):
     subject: str = "Reset Your Password"
 
-    token: str = user.generate_token()
+    token: str = user.generate_token(salt=current_app.config["RESET_PASSWORD_SALT"])
 
     reset_link: str = get_full_url(url_for("accounts.reset_password", token=token))
 

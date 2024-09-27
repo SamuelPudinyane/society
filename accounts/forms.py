@@ -122,7 +122,7 @@ class EditUserProfileForm(FlaskForm):
                               )
     contact_number = StringField('Phone Number', validators=[Length(10, 10), StrongPhone()])
     occupation = StringField('Occupation', validators=[Length(5, 50)])
-    address = TextAreaField('Address', validators=[Length(5, 120)], render_kw={'rows': 1})
+    address = TextAreaField('Address', validators=[Length(5, 120)])
     postal_code = StringField('Postal Code', validators=[Length(4, 4)])
     about = TextAreaField('About')
     submit = SubmitField('Save Profile')

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "accounts", "static")
+MEDIA_ROOT = os.path.join(BASE_DIR, "accounts", "static", "assets")
 
 UPLOAD_FOLDER = os.path.join(MEDIA_ROOT, "profile")
 
@@ -39,6 +39,11 @@ class BaseConfig:
     MAIL_PORT = 587
     MAIL_USE_TLS = True  # Enable TLS
     MAIL_USE_SSL = False  # SSL should remain False
+    
+    # Default Salt string for security tokens
+    ACCOUNT_CONFIRM_SALT = os.getenv("ACCOUNT_CONFIRM_SALT", "account_confirm_salt")
+    RESET_PASSWORD_SALT = os.getenv("RESET_PASSWORD_SALT", "reset_password_salt")
+    CHANGE_EMAIL_SALT = os.getenv("CHANGE_EMAIL_SALT", "change_email_salt")
 
 
 
@@ -53,8 +58,13 @@ class Production(BaseConfig):
 
 class Testing(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", None)
-
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(
+        BASE_DIR, "db.sqlite3"
+    )
+    
+    # Disable CSRF protection for testing.
+    WTF_CSRF_ENABLED = False
+    
 
 development = Development()
 

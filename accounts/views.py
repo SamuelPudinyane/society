@@ -35,7 +35,7 @@ This accounts blueprint defines routes and templates related to user management
 within our application.
 """
 accounts = Blueprint('accounts', __name__, template_folder='templates')
-app = Flask(__name__) 
+app = Flask(__name__, static_folder='static') 
 
 @accounts.route('/register', methods=['GET', 'POST'])
 def register() -> Response:
@@ -77,7 +77,7 @@ def register() -> Response:
                 address=address,
                 postal_code=postal_code,
                 role=role,
-                password=password
+                password=password,
             )
                 
             # Sends account confirmation mail to the user.
@@ -105,6 +105,8 @@ def login() -> Response:
     if form.validate_on_submit():
         email = form.data.get("email", None)
         password = form.data.get("password", None)
+        remember = form.data.get("remember", True)
+        
         # Attempt to authenticate the user from the database.
         user = User.authenticate(email=email, password=password)
 
@@ -122,10 +124,9 @@ def login() -> Response:
                 return redirect(url_for("accounts.login"))
 
             # Log the user in and set the session to remember the user for (15 days)
-            login_user(user, remember=True, duration=timedelta(days=15))
+            login_user(user, remember=remember, duration=timedelta(days=15))
             
             flash("You are logged in successfully.", "success")
-            session['email']=email
             return redirect(url_for("accounts.index"))
 
         return redirect(url_for("accounts.login"))
@@ -150,7 +151,8 @@ def confirm_account() -> Response:
     token: str = request.args.get("token", None)
 
     # Verify the provided token and return token instance.
-    auth_token = User.verify_token(token=token)
+    auth_token = User.verify_token(
+        token=token, salt=current_app.config["ACCOUNT_CONFIRM_SALT"])
 
     if auth_token:
         # Retrieve the user instance associated with the token by providing user ID.
@@ -250,7 +252,8 @@ def reset_password() -> Response:
     token = request.args.get("token", None)
 
     # Verify the provided token and return token instance.
-    auth_token = User.verify_token(token=token)
+    auth_token = User.verify_token(
+        token=token, salt=current_app.config["PASSWORD_RESET_SALT"])
 
     if auth_token:
         form = ResetPasswordForm()  # A form class to Reset User's Password.
@@ -370,64 +373,42 @@ def index() -> Response:
 @accounts.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile() -> Response:
-    """
-    Handling the user's profile page,
-    allowing them to view and edit their profile information.
+    form = EditUserProfileForm(obj=current_user)
 
-    Methods:
-        GET: Render the profile template with the user's current information.
-        POST: Update the user's profile with the submitted form data.
-
-    Returns:
-        Response: The rendered profile template or a redirect after form submission.
-    """
-    form = EditUserProfileForm()  # A form class to Edit User's Profile.
-
-    # Retrieve the fresh user instance based on their ID.
+    # Retrieve the fresh user instance based on their ID
     user = User.get_user_by_id(current_user.id, raise_exception=True)
+    
+    profile = user.profile
 
     if form.validate_on_submit():
-        first_name = form.data.get("first_name")
-        last_name = form.data.get("last_name")
-        occupation = form.data.get("occupation")
-        contact_number = form.data.get("contact_number")
-        address = form.data.get("address")
-        postal_code = form.data.get("postal_code")
-        profile_image = form.data.get("profile_image")
-        about = form.data.get("about")
+        # Retrieve form data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        occupation = form.occupation.data
+        contact_number = form.contact_number.data
+        address = form.address.data
+        postal_code = form.postal_code.data
+        profile_image = form.profile_image.data
+        bio = form.about.data
 
-        # Check if the new email already exists and belongs to a different user.
-        email_exist = User.query.filter(
-            User.email == User.email, User.id != current_user.id
-        ).first()
+        # Update the user's main details
+        user.first_name = first_name
+        user.last_name = last_name
+        user.occupation = occupation
+        user.contact_number = contact_number
+        user.address = address
+        user.postal_code = postal_code
+        profile.bio = bio
 
-        if email_exist:
-            flash("Email already exists. Choose another.", "error")
-        else:
-            try:
-                # Update the user's profile details.
-                user.first_name = first_name
-                user.last_name = last_name
-                user.occupation = occupation
-                user.contact_number = contact_number
-                user.address = address
-                user.postal_code = postal_code
-                user.profile.bio = about
-                
-                # Handle profile image upload if provided.
-                if profile_image and getattr(profile_image, "filename"):
-                    user.profile.set_avator(profile_image)
-                
-                # Commit changes to the database.
-                db.session.commit()
-            except Exception as e:
-                # Handle database error by raising an internal server error.
-                raise InternalServerError
+        # Handle profile image upload if provided
+        if profile_image and getattr(profile_image, "filename"):
+            profile.set_avator(profile_image)
 
-            flash("Your profile update successfully.", "success")
-            return redirect(url_for("accounts.index"))
+        # Commit changes to the database
+        db.session.commit()
 
-        return redirect(url_for("accounts.profile"))
+        flash("Your profile was updated successfully.", "success")
+        return redirect(url_for("accounts.index"))
 
     return render_template("profile.html", form=form)
 
