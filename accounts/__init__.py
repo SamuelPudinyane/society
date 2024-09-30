@@ -15,7 +15,7 @@ from werkzeug.exceptions import (
 from flask import Flask as FlaskAuth
 
 
-def create_app(config_type="development"):
+def create_app(config_type):
     """
     Create and configure the Flask application instance.
     """

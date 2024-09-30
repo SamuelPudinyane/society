@@ -60,7 +60,7 @@ class User(BaseModel, UserMixin):
     """
 
     __tablename__ = "user"
-    userId = db.Column(db.Integer, autoincrement=True,default=1)
+    
     first_name = db.Column(db.String(25), nullable=False)
     last_name = db.Column(db.String(25), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -118,7 +118,7 @@ class User(BaseModel, UserMixin):
         except Exception as e:
             # Handle database error by raising an internal server error.
             
-            raise e
+            raise InternalServerError
 
         return user
 
@@ -135,16 +135,6 @@ class User(BaseModel, UserMixin):
 
         return cls.query.get(user_id)
 
-    def to_dict(self):
-            return {
-                "id":self.id,
-                "firstname":self.first_name,
-                "last_name":self.last_name,
-                "email":self.email,
-                "contact":self.contact_number,
-                "occupation":self.occupation,
-                "gender":self.gender
-        }
     @classmethod
     def get_user_by_email(cls, email: t.AnyStr):
         """
@@ -153,10 +143,7 @@ class User(BaseModel, UserMixin):
 
         :param email: The email address of the user to retrieve.
         """
-        items=User.query.filter_by(email=email).first()
-        
-
-        return User.query.filter_by(email=email).first()
+        return cls.query.filter_by(email=email).first()
 
     def set_password(self, password: t.AnyStr):
         """
@@ -180,12 +167,12 @@ class User(BaseModel, UserMixin):
 
         :return: The newly created security token.
         """
-        instance = UserSecurityToken.create_new(user_id=self.id)
+        instance = UserSecurityToken.create_new(salt=salt, user_id=self.id)
         return instance.token
 
     @staticmethod
     def verify_token(
-        token: t.AnyStr, raise_exception: bool = True
+        token: t.AnyStr, salt: str, raise_exception: bool = True
     ) -> t.Union[t.Optional["UserSecurityToken"], HTTPException, None]:
         """
         Verifies whether a security token is valid and not expired.
@@ -195,7 +182,7 @@ class User(BaseModel, UserMixin):
 
         :return: `True` if the token exists and is not expired, `False` otherwise.
         """
-        instance = UserSecurityToken.query.filter_by(token=token)
+        instance = UserSecurityToken.query.filter_by(token=token, salt=salt)
 
         if raise_exception:
             token = instance.first_or_404()
@@ -215,29 +202,16 @@ class User(BaseModel, UserMixin):
 
         send_confirmation_mail(self)
 
-    @classmethod
-    def profile(self,cls):
+    @property
+    def profile(self):
         """
         Retrieves the user's profile instance from the database.
 
         :return: The user's profile object, or None if no instance is found.
         """
-        
-        print("Id",self.id)
-        
-        profile=cls.query.get(self.id)
-        print("this ",profile)
+        profile = Profile.query.filter_by(user_id=self.id).first()
         return profile
-        # profile = Profile.query.filter_by(user_id=self.id).first()
     
-    def profile_dict(self):
-         
-            return {
-            "bio":self.bio,
-            "avator":self.avator
-            }
-        
-
     @property
     def is_active(self) -> bool:
         """
@@ -266,31 +240,13 @@ class Profile(BaseModel):
     )
 
     user = db.Relationship("User", foreign_keys=[user_id])
-
-  
-    def profile(id):
-        """
-        Retrieves the user's profile instance from the database.
-
-        :return: The user's profile object, or None if no instance is found.
-        """
-        print("id ",id)
-        profile=Profile.query.filter_by(user_id=id).first()
-        # profile=cls.query.get(self.user_id)
-        
-        return profile.profile_dict()
-        # profile = Profile.query.filter_by(user_id=self.id).first()
     
-    def profile_dict(self):
-         
-            return {
-            "id":self.id,
-            "bio":self.bio,
-            "avator":self.avator
-            }
+
+    user = db.Relationship("User", foreign_keys=[user_id])
     
 
     def set_avator(self, profile_image):
+        
         """
         Set a new avatar for the user by removing the existing avatar (if any), saving the new one,
         and updating the user's avatar field in the database.
@@ -300,31 +256,31 @@ class Profile(BaseModel):
         :raises InternalServerError: If there is an error during the file-saving process.
         """
         from config import UPLOAD_FOLDER
-
+        
         if self.avator:
             path = os.path.join(UPLOAD_FOLDER, self.avator)
             remove_existing_file(path=path)
 
+    
         if not os.path.exists(UPLOAD_FOLDER):
-            os.makedirs(os.path.join(UPLOAD_FOLDER), exist_ok=True)
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+        # Generate a unique filename for the new avatar.
         self.avator = get_unique_filename(profile_image.filename)
-
+        
         try:
-            # Save the new avatar file to the file storage.
             profile_image.save(os.path.join(UPLOAD_FOLDER, self.avator))
         except Exception as e:
-            # Handle exceptions that might occur during file saving.
-            print("Error saving avatar: %s" % e)
-            raise InternalServerError
+        # Handle exceptions that might occur during file saving.
+            print(f"Error saving avatar: {e}")
+            raise InternalServerError(f"Error saving avatar due to: {str(e)}")
         
-
+        
+        
 
     def __repr__(self):
         return "<Profile '{}'>".format(self.user.email)
     
-
-
 
 class UserSecurityToken(BaseModel):
     """
@@ -341,6 +297,8 @@ class UserSecurityToken(BaseModel):
     token = db.Column(
         db.String(72), default=unique_security_token, nullable=False, unique=True
     )
+    
+    salt = db.Column(db.String(20), nullable=False)
 
     expire = db.Column(db.Boolean, default=False, nullable=False, server_default="0")
 
@@ -351,7 +309,7 @@ class UserSecurityToken(BaseModel):
     user = db.Relationship("User", foreign_keys=[user_id])
 
     @classmethod
-    def create_new(cls, user_id: t.AnyStr) -> t.AnyStr:
+    def create_new(cls, **kwargs) -> t.AnyStr:
         """
         Creates a new security token instance for a user
         and saves it to the database.
@@ -362,7 +320,7 @@ class UserSecurityToken(BaseModel):
         :raises InternalServerError: If there is an error saving the token to the database.
         """
         try:
-            instance = cls(user_id=user_id)
+            instance = cls(**kwargs)
             instance.save()
         except Exception as e:
             raise InternalServerError
