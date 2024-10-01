@@ -96,7 +96,19 @@ class User(BaseModel, UserMixin):
             return user
 
         return None
-
+    def to_dict(self):
+        # Convert the user profile and related user into a dictionary
+        return {
+           
+            
+                "id": self.id,
+                "firstname": self.first_name,
+                "lastname": self.last_name,
+                "email": self.email,
+                "contact": self.contact_number,
+                "occupation": self.occupation,
+            
+            }
     @classmethod
     def create(cls, **kwargs):
         """
@@ -244,7 +256,26 @@ class Profile(BaseModel):
 
     user = db.Relationship("User", foreign_keys=[user_id])
     
+    def to_dic(self):
+        # Convert the user profile and related user into a dictionary
+        return {
+            
+            "id":self.user.id,
+            "bio": self.bio,
+            "avator": self.avator,
+            
+            
+            }
+    def get_profile_by_user_id(user_id):
+        # Retrieve the Profile instance by user_id
+        profile_instance = Profile.query.filter_by(user_id=user_id).first()
 
+        if profile_instance:
+            # Convert the profile to a dictionary
+            profile_dict = profile_instance.to_dic()
+            return profile_dict
+        else:
+            return {"error": "Profile not found"}
     def set_avator(self, profile_image):
         
         """

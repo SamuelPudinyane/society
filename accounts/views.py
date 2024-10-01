@@ -8,7 +8,7 @@ from flask_login import (
         login_user,
         logout_user
     )
-
+import base64
 from accounts.decorators import authentication_redirect
 from accounts.email_utils import (
     send_reset_password,
@@ -28,7 +28,7 @@ from flask import Flask
 from datetime import datetime, timedelta
 import re
 import os
-
+import shutil
 import json
 """
 This accounts blueprint defines routes and templates related to user management
@@ -125,7 +125,8 @@ def login() -> Response:
 
             # Log the user in and set the session to remember the user for (15 days)
             login_user(user, remember=remember, duration=timedelta(days=15))
-            
+            session['email']=email
+            print(email)
             flash("You are logged in successfully.", "success")
             return redirect(url_for("accounts.index"))
 
@@ -422,16 +423,64 @@ def innovation():
         return redirect(url_for('accounts.login'))
     # Redirect to another application running on a different server or port
     user = User.get_user_by_email(email=email)
-    print(user.id)
-    user_id=user.id
-    profile=Profile.profile(user_id)
     user=user.to_dict()
+    profile=Profile.get_profile_by_user_id(user['id'])
+    print(profile['avator'])
+    base64_string = process_image(profile['avator'])
+    print("image ",base64_string)
     user['bio']=profile['bio']
-    user['avator']=profile['avator']
-    print(profile)
+    user['avator']=base64_string
     
     print("user details ",user)
     return redirect(f'http://127.0.0.1:8000?user={json.dumps(user)}')
+
+
+def create_folder(folder_name):
+    # Create a new folder
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+        print(f"Folder '{folder_name}' created.")
+    return folder_name
+
+def save_filename_in_folder(filename, folder_name):
+    # Save the filename in the created folder
+    file_path = os.path.join(folder_name, filename)
+    with open(file_path, "w") as file:
+        file.write(filename)
+    return file_path
+
+def convert_image_to_base64_in_folder(image_filenam):
+    # Read and convert image to Base64 while it's in the folder
+    
+    
+    with open(image_filenam, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+    
+    return encoded_string
+
+def delete_folder(folder_name):
+    # Delete the folder and all its contents
+    if os.path.exists(folder_name):
+        shutil.rmtree(folder_name)
+        print(f"Folder '{folder_name}' and its contents deleted.")
+    
+def process_image(filename):
+    folder_name = "temp_folder"
+    
+    # 1. Create a folder
+    create_folder(folder_name)
+    
+    # 2. Save the image filename in the folder
+    image_path = save_filename_in_folder(filename, folder_name)
+    
+    # 3. Convert the image to Base64 while it's in the folder
+    base64_string = convert_image_to_base64_in_folder(image_path)
+    
+    # 4. Delete the folder after conversion
+    delete_folder(folder_name)
+    
+    # 5. Return the Base64-encoded string
+    return base64_string
 
 
 @app.route("/session")

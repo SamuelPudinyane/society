@@ -116,7 +116,7 @@ class EditUserProfileForm(FlaskForm):
                               validators=[
                                   FileAllowed(['jpg', 'jpeg', 'png', 'svg'],
                                               'Please upload images only.'),
-                                  FileSize(max_size=2000000,
+                                  FileSize(max_size=5000000,
                                            message='Profile image size should not greater than 2MB.')
                               ]
                               )
