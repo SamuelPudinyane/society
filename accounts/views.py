@@ -90,7 +90,7 @@ def register() -> Response:
 
 @accounts.route("/login", methods=["GET", "POST"])
 def login() -> Response:
-    print("here now")
+    
     """
     Handling user login functionality.
     If the user is already authenticated, they are redirected to the index page.
@@ -103,7 +103,6 @@ def login() -> Response:
     """
     form = LoginForm()  # A form class for Login Account.
     
-    print("here is now")
     if form.validate_on_submit():
         email = form.data.get("email", None)
         password = form.data.get("password", None)
