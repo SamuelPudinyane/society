@@ -107,6 +107,8 @@ class User(BaseModel, UserMixin):
                 "email": self.email,
                 "contact": self.contact_number,
                 "occupation": self.occupation,
+                "gender":self.gender,
+                "role":self.role
             
             }
     @classmethod

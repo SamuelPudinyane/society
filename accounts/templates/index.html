@@ -193,7 +193,11 @@
                             <a href="./contributors.html">Innovation</a>
                             <a href="./blog.html">Careers</a>
                             <a href="{{url_for('accounts.profile')}}">Update Profile</a>
+                            {% if user is not none%}
                             <a href="{{url_for('accounts.logout')}}">LOGOUT</a>
+                            {% else%}
+                            <a href="{{url_for('accounts.login_in')}}">LOGIN</a>
+                            {% endif%}
                         </div>
                         
                     </div>
@@ -264,10 +268,10 @@
 
                 <div class="features-wrapper">
                     <div class="feature-item feature1">
-                       <a class="anchor" href="#">
+                       <a class="anchor" href="{{url_for('accounts.stem_app')}}">
                         <img src="../static/images/Bookstore (1).png" alt="Icon 1">
-                        <h4>SMMEs</h4>
-                        <p>Explore content on SMMEs</p>
+                        <h4>STEM APP</h4>
+                        <p>Explore content on STEM APP</p>
                        </a>
                     </div>
                     <div class="feature-item feature2">

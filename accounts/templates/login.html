@@ -231,7 +231,7 @@
                     {{ render_field(form.password, placeholder="Enter your password") }}
                     {{ render_field(form.remember, checked="true") }}
                     {{ render_field(form.submit, class="w-100 mb-3") }}
-
+                    
                     <div class="clearfix">
                       <label class="float-left"><i><a href="{{ url_for('accounts.forgot_password') }}">Forgot Password?</a></i></label>
                       <label class="float-right"><i><a href="{{ url_for('accounts.register') }}">Create new account</a></i></label>

@@ -23,11 +23,8 @@
                         src="{{ url_for('static', filename='assets/profile/'+current_user.profile.avator) }}">
                     {% else %}
                     <img class="rounded-circle mt-5 mb-3" style="object-fit: cover;width: 180px;height: 180px;"
-<<<<<<< HEAD
                         src="../static/images/user.png">
-=======
                         src="{{ url_for('static', filename='images/default_avator.jpg') }}">
->>>>>>> ed7e73836ca57848b72eb6e4da319cd31478fb66
                     {% endif %}
                     <h4 class="font-weight-bold">{{ current_user.first_name }} {{ current_user.last_name }}</h4>
                     <p class="text-black-50">{{ current_user.email }}</p>

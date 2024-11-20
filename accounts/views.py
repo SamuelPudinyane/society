@@ -13,7 +13,7 @@ from accounts.decorators import authentication_redirect
 from accounts.email_utils import (
     send_reset_password,
 )
-
+import gzip
 from accounts.extensions import database as db
 from accounts.models import User, Profile
 from accounts.forms import (
@@ -30,6 +30,7 @@ import re
 import os
 import shutil
 import json
+import urllib.parse
 """
 This accounts blueprint defines routes and templates related to user management
 within our application.
@@ -88,8 +89,8 @@ def register() -> Response:
 
 
 @accounts.route("/login", methods=["GET", "POST"])
-@authentication_redirect
 def login() -> Response:
+    print("here now")
     """
     Handling user login functionality.
     If the user is already authenticated, they are redirected to the index page.
@@ -101,7 +102,8 @@ def login() -> Response:
     :return: Renders the login template on GET request or redirects based on the login status.
     """
     form = LoginForm()  # A form class for Login Account.
-
+    
+    print("here is now")
     if form.validate_on_submit():
         email = form.data.get("email", None)
         password = form.data.get("password", None)
@@ -109,7 +111,7 @@ def login() -> Response:
         
         # Attempt to authenticate the user from the database.
         user = User.authenticate(email=email, password=password)
-
+       
         if not user:
             flash("Invalid email or password. Please try again.", "error")
         else:
@@ -126,7 +128,10 @@ def login() -> Response:
             # Log the user in and set the session to remember the user for (15 days)
             login_user(user, remember=remember, duration=timedelta(days=15))
             session['email']=email
-            print(email)
+            user = User.get_user_by_email(email=email)
+            user=user.to_dict()
+            session['user']=user
+            print("session ",session.get('user'))
             flash("You are logged in successfully.", "success")
             return redirect(url_for("accounts.index"))
 
@@ -186,8 +191,9 @@ def confirm_account() -> Response:
 
 
 @accounts.route("/logout")
-@login_required
 def logout() -> Response:
+    session.clear()
+    user=session.get('user')
     """
     Logs out the currently authenticated user
     and redirect them to the login page.
@@ -196,10 +202,25 @@ def logout() -> Response:
     """
     # Log out the user and clear the session.
     logout_user()
-
+    
+    print("users ",user)
     flash("You're logout successfully.", "success")
-    return redirect(url_for("accounts.login"))
+    return render_template("index.html",user=user)
 
+
+@accounts.route("/login-in")
+def login_in() -> Response:
+    print("this is here")
+    """
+    Logs out the currently authenticated user
+    and redirect them to the login page.
+
+    :return: A redirect response to the login page with a success flash message.
+    """
+    form=LoginForm() 
+    
+    flash("You're logout successfully.", "success")
+    return render_template('login.html',form=form)
 
 @accounts.route("/forgot/password", methods=["GET", "POST"])
 def forgot_password() -> Response:
@@ -300,7 +321,6 @@ def reset_password() -> Response:
 
 
 @accounts.route("/change/password", methods=["GET", "POST"])
-@login_required
 def change_password() -> Response:
     """
     Handling user password change requests.
@@ -361,19 +381,26 @@ def change_password() -> Response:
 
 @accounts.route("/")
 @accounts.route("/home")
-@login_required
 def index() -> Response:
+    user=session.get('user')
+    print("here ",user)
+    
     """
     Render the homepage for authenticated users.
 
     :return: Renders the `index.html` template.
     """
-    return render_template("index.html")
+    return render_template("index.html",user=user)
 
 
 @accounts.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile() -> Response:
+    user_profile=session.get('user')
+    
+    if(not user_profile):
+        print("here ")
+        return redirect(url_for("accounts.login"))
     form = EditUserProfileForm(obj=current_user)
 
     # Retrieve the fresh user instance based on their ID
@@ -410,8 +437,10 @@ def profile() -> Response:
 
         flash("Your profile was updated successfully.", "success")
         return redirect(url_for("accounts.index"))
+    
+    return render_template("profile.html", form=form,user=user_profile)
 
-    return render_template("profile.html", form=form)
+base64_string=""
 
 
 
@@ -425,14 +454,49 @@ def innovation():
     user = User.get_user_by_email(email=email)
     user=user.to_dict()
     profile=Profile.get_profile_by_user_id(user['id'])
-    print(profile['avator'])
-    base64_string = process_image(profile['avator'])
-    print("image ",base64_string)
     user['bio']=profile['bio']
-    user['avator']=base64_string
     
-    print("user details ",user)
     return redirect(f'http://127.0.0.1:8000?user={json.dumps(user)}')
+
+
+@accounts.route('/stem-app')
+def stem_app():
+    email=session.get('email')
+    if not email:
+        return redirect(url_for('accounts.login'))
+    # Redirect to another application running on a different server or port
+    user = User.get_user_by_email(email=email)
+    user=user.to_dict()
+    profile=Profile.get_profile_by_user_id(user['id'])
+    user['bio']=profile['bio']
+    
+    return redirect(f'http://127.0.0.1:7000?user={json.dumps(user)}')
+
+
+def compress_base64_string(base64_string: str) -> str:
+    """
+    Compress a Base64-encoded string.
+
+    Args:
+        b64_string (str): The Base64 string to compress.
+
+    Returns:
+        str: The compressed Base64 string.
+    """
+    try:
+
+        
+        binary_data = base64.b64decode(base64_string)
+        # Compress the binary data
+        compressed_data = gzip.compress(binary_data)
+        print("compressed ",compressed_data)
+        # Encode the compressed data back into a Base64 string
+        compressed_b64_string = base64.b64encode(compressed_data)
+        compressed_b64_string = base64.b64encode(compressed_b64_string).decode('utf-8')
+        return compressed_b64_string
+    except Exception as e:
+        raise ValueError(f"Error compressing Base64 string: {e}")
+
 
 
 def create_folder(folder_name):
@@ -449,14 +513,41 @@ def save_filename_in_folder(filename, folder_name):
         file.write(filename)
     return file_path
 
-def convert_image_to_base64_in_folder(image_filenam):
+def convert_image_to_base64_in_folder(image_filename):
     # Read and convert image to Base64 while it's in the folder
     
+    try:
+        config={'base_dir':'accounts\\static\\assets\\'}
+        # Get base directory from config
+        base_dir = config['base_dir']
     
-    with open(image_filenam, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-    
-    return encoded_string
+        # Construct path for the uploads folder
+        uploads_dir = os.path.join(base_dir, 'profile')
+        # Ensure absolute path for consistency and security
+        image_path = os.path.join(uploads_dir,image_filename)
+        
+        # Validate file existence and extension
+        if not os.path.exists(image_path):
+            print(f"Error: File '{image_filename}' does not exist.")
+            return None
+
+        # Check for supported image formats (add more as needed)
+        if not image_path.lower().endswith(('.jpg', '.jpeg', '.png')):
+            print(f"Error: Unsupported image format. Supported formats: JPG, JPEG, PNG.")
+            return None
+
+        with open(image_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+
+        return encoded_string
+
+    except FileNotFoundError:
+        print(f"Error: File '{image_filename}' not found.")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+    return None  # Return None on error
+
 
 def delete_folder(folder_name):
     # Delete the folder and all its contents
