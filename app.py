@@ -2,7 +2,7 @@ import os
 
 from accounts import create_app
 from waitress import serve
-config_type = os.getenv("FLASK_ENV")
+config_type = os.getenv("FLASK_ENV","development")
 
 app = create_app(config_type)
 
