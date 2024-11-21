@@ -196,8 +196,7 @@ def send_user_data():
    
     # Get user data from the incoming request
     user_data= User.get_users()
-    user_data=user_data.to_dict()
-    print("user_data ",user_data)
+    
     if not user_data:
         return {'error': 'No data provided'}
     # Example of the data structure expected by the other app
@@ -413,8 +412,7 @@ def change_password() -> Response:
 @accounts.route("/home")
 def index() -> Response:
     user=session.get('user')
-    print("here ",user)
-    
+   
     """
     Render the homepage for authenticated users.
 
