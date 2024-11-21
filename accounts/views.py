@@ -38,7 +38,7 @@ within our application.
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 app = Flask(__name__, static_folder='static') 
 
-@accounts.route('https://dashboard.render.com/web/srv-csurdslumphs739mc260/register', methods=['GET', 'POST'])
+@accounts.route('https://newx-vtqu.onrender.com//register', methods=['GET', 'POST'])
 def register() -> Response:
     
     """
@@ -88,7 +88,7 @@ def register() -> Response:
     return render_template('create_account.html', form=form)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/login", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//login", methods=["GET", "POST"])
 def login() -> Response:
     
     """
@@ -139,7 +139,7 @@ def login() -> Response:
     return render_template("login.html", form=form)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/account/confirm", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//account/confirm", methods=["GET", "POST"])
 def confirm_account() -> Response:
     """
     Handling account confirmation request via a token.
@@ -189,7 +189,7 @@ def confirm_account() -> Response:
     return abort(HTTPStatus.NOT_FOUND)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/logout")
+@accounts.route("https://newx-vtqu.onrender.com//logout")
 def logout() -> Response:
     session.clear()
     user=session.get('user')
@@ -207,7 +207,7 @@ def logout() -> Response:
     return render_template("index.html",user=user)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/login-in")
+@accounts.route("https://newx-vtqu.onrender.com//login-in")
 def login_in() -> Response:
     print("this is here")
     """
@@ -221,7 +221,7 @@ def login_in() -> Response:
     flash("You're logout successfully.", "success")
     return render_template('login.html',form=form)
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/forgot/password", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//forgot/password", methods=["GET", "POST"])
 def forgot_password() -> Response:
     """
     Handling forgot password requests by validating the provided email
@@ -255,7 +255,7 @@ def forgot_password() -> Response:
     return render_template("forgot_password.html", form=form)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/password/reset", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//password/reset", methods=["GET", "POST"])
 def reset_password() -> Response:
     """
     Handling password reset requests.
@@ -319,7 +319,7 @@ def reset_password() -> Response:
     return abort(HTTPStatus.NOT_FOUND)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/change/password", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//change/password", methods=["GET", "POST"])
 def change_password() -> Response:
     """
     Handling user password change requests.
@@ -378,8 +378,8 @@ def change_password() -> Response:
     return render_template("change_password.html", form=form)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/")
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/home")
+@accounts.route("https://newx-vtqu.onrender.com//")
+@accounts.route("https://newx-vtqu.onrender.com//home")
 def index() -> Response:
     user=session.get('user')
     print("here ",user)
@@ -392,7 +392,7 @@ def index() -> Response:
     return render_template("index.html",user=user)
 
 
-@accounts.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/profile", methods=["GET", "POST"])
+@accounts.route("https://newx-vtqu.onrender.com//profile", methods=["GET", "POST"])
 @login_required
 def profile() -> Response:
     user_profile=session.get('user')
@@ -443,7 +443,7 @@ base64_string=""
 
 
 
-@accounts.route('https://dashboard.render.com/web/srv-csurdslumphs739mc260/innovation')
+@accounts.route('https://newx-vtqu.onrender.com//innovation')
 def innovation():
     email=session.get('email')
     print(email)
@@ -458,7 +458,7 @@ def innovation():
     return redirect(f'http://127.0.0.1:8000?user={json.dumps(user)}')
 
 
-@accounts.route('https://dashboard.render.com/web/srv-csurdslumphs739mc260/stem-app')
+@accounts.route('https://newx-vtqu.onrender.com//stem-app')
 def stem_app():
     email=session.get('email')
     if not email:
@@ -573,7 +573,7 @@ def process_image(filename):
     return base64_string
 
 
-@app.route("https://dashboard.render.com/web/srv-csurdslumphs739mc260/session")
+@app.route("https://newx-vtqu.onrender.com//session")
 def fetch_user_session_data():
     email=session["email"]
     return email
