@@ -175,7 +175,7 @@ class User(BaseModel, UserMixin):
         """
         return check_password_hash(self.password, password)
 
-    def generate_token(self) -> t.AnyStr:
+    def generate_token(self,salt:str) -> t.AnyStr:
         """
         Generates a new security token for the user.
 
