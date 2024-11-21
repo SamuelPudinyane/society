@@ -158,6 +158,16 @@ class User(BaseModel, UserMixin):
         :param email: The email address of the user to retrieve.
         """
         return cls.query.filter_by(email=email).first()
+    
+
+    @classmethod
+    def get_users(cls):
+        """
+        Retrieves all user instances from the database.
+
+        :return: List of all user instances.
+        """
+        return cls.query.all()
 
     def set_password(self, password: t.AnyStr):
         """

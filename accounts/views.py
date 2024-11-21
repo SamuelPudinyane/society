@@ -1,5 +1,6 @@
-from flask import abort, render_template, request, redirect, url_for, flash,session
+from flask import abort, render_template, request, redirect, url_for, flash,session,jsonify
 from http import HTTPStatus
+import requests
 from werkzeug.exceptions import InternalServerError
 from flask import Blueprint, Response
 from flask_login import (
@@ -188,6 +189,35 @@ def confirm_account() -> Response:
 
     # If the token is invalid, return a 404 error
     return abort(HTTPStatus.NOT_FOUND)
+
+
+@accounts.route('/send_user_data', methods=['POST'])
+def send_user_data():
+   
+    # Get user data from the incoming request
+    user_data= User.get_users()
+    user_data=user_data.to_dict()
+    print("user_data ",user_data)
+    if not user_data:
+        return {'error': 'No data provided'}
+    # Example of the data structure expected by the other app
+    target_url = 'http://127.0.0.1:7000/receive_user_data'
+
+    try:
+        # Send user data to another app (target app) via POST request
+        response = requests.post(target_url, json=user_data)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            return jsonify({'message': 'Data sent successfully', 'status': response.status_code}), 200
+        else:
+            return jsonify({'error': 'Failed to send data to the target app', 'status': response.status_code}), 500
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 
 
 @accounts.route("/logout")
@@ -399,7 +429,6 @@ def profile() -> Response:
     user_profile=session.get('user')
     
     if(not user_profile):
-        print("here ")
         return redirect(url_for("accounts.login"))
     form = EditUserProfileForm(obj=current_user)
 
