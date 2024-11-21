@@ -63,7 +63,7 @@ def get_full_url(endpoint: str) -> str:
         str: The full `URL`.
     """
     domain = current_app.config["SITE_URL"]
-    Domain='https://newx-vtqu.onrender.com/'
+    Domain='https://newx-vtqu.onrender.com'
     return "".join([Domain, endpoint])
 
 
