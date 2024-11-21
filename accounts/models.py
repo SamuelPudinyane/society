@@ -331,7 +331,7 @@ class UserSecurityToken(BaseModel):
         db.String(72), default=unique_security_token, nullable=False, unique=True
     )
     
-    salt = db.Column(db.String(20), nullable=False)
+    salt = db.Column(db.String(20))
 
     expire = db.Column(db.Boolean, default=False, nullable=False, server_default="0")
 
