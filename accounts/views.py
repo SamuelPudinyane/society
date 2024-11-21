@@ -157,7 +157,7 @@ def confirm_account() -> Response:
 
     # Verify the provided token and return token instance.
     auth_token = User.verify_token(
-        token=token, salt=current_app.config["ACCOUNT_CONFIRM_SALT"])
+        token=token, salt=app.config["ACCOUNT_CONFIRM_SALT"])
 
     if auth_token:
         # Retrieve the user instance associated with the token by providing user ID.
@@ -274,7 +274,7 @@ def reset_password() -> Response:
 
     # Verify the provided token and return token instance.
     auth_token = User.verify_token(
-        token=token, salt=current_app.config["PASSWORD_RESET_SALT"])
+        token=token, salt=app.config["PASSWORD_RESET_SALT"])
 
     if auth_token:
         form = ResetPasswordForm()  # A form class to Reset User's Password.

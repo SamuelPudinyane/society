@@ -63,7 +63,8 @@ def get_full_url(endpoint: str) -> str:
         str: The full `URL`.
     """
     domain = current_app.config["SITE_URL"]
-    return "".join([domain, endpoint])
+    Domain='https://newx-vtqu.onrender.com/'
+    return "".join([Domain, endpoint])
 
 
 def remove_existing_file(path=None):
