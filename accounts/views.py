@@ -498,7 +498,9 @@ def stem_app():
         
         return redirect(f'http://127.0.0.1:7000?user={json.dumps(user)}')
 
-@accounts.route('/stem-app-route')
+
+
+@accounts.route('https://newx-vtqu.onrender.com/stem-app-route')
 def stemapproute():
     email = session.get('email')
     if not email:
