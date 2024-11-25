@@ -474,7 +474,6 @@ base64_string=""
 @accounts.route('/innovation')
 def innovation():
     email=session.get('email')
-    print(email)
     if not email:
         return redirect(url_for('accounts.login'))
     # Redirect to another application running on a different server or port
@@ -488,16 +487,42 @@ def innovation():
 
 @accounts.route('/stem-app')
 def stem_app():
-    email=session.get('email')
+        email=session.get('email')
+        if not email:
+            return redirect(url_for('accounts.login'))
+        # Redirect to another application running on a different server or port
+        user = User.get_user_by_email(email=email)
+        user=user.to_dict()
+        profile=Profile.get_profile_by_user_id(user['id'])
+        user['bio']=profile['bio']
+        
+        return redirect(f'http://127.0.0.1:7000?user={json.dumps(user)}')
+
+@accounts.route('/stem-app-route')
+def stemapproute():
+    email = session.get('email')
     if not email:
         return redirect(url_for('accounts.login'))
-    # Redirect to another application running on a different server or port
+
+    # Retrieve user data
     user = User.get_user_by_email(email=email)
-    user=user.to_dict()
-    profile=Profile.get_profile_by_user_id(user['id'])
-    user['bio']=profile['bio']
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user = user.to_dict()
+    profile = Profile.get_profile_by_user_id(user['id'])
+
+    if not profile:
+        return jsonify({'error': 'Profile not found for user'}), 404
+
+    user['bio'] = profile['bio']
+    user['avatar'] = convert_image_to_base64_in_folder(profile['avator'])
+    user['users'] = [u.to_dict() for u in User.get_users()]
+            
+    return jsonify(user)
+
     
-    return redirect(f'http://127.0.0.1:7000?user={json.dumps(user)}')
+    
 
 
 def compress_base64_string(base64_string: str) -> str:
