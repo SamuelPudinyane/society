@@ -502,6 +502,7 @@ def stem_app():
 
 @accounts.route('/newx-vtqu.onrender.com/stem-app-route')
 def stemapproute():
+    print("this user here ",session.get(user))
     email = session.get('email')
     if not email:
         return redirect(url_for('accounts.login'))
