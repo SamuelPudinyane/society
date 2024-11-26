@@ -500,7 +500,7 @@ def stem_app():
 
 
 
-@accounts.route('/http://127.0.0.1:5000//newx-vtqu.onrender.com/stem-app-route')
+@accounts.route('/newx-vtqu.onrender.com/stem-app-route')
 def stemapproute():
     email = session.get('email')
     if not email:
