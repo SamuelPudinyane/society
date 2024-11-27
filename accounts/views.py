@@ -517,7 +517,7 @@ def stemapproute():
 
     if not profile:
         return jsonify({'error': 'Profile not found for user'}), 404
-
+    print(user)
     user['bio'] = profile['bio']
     user['avatar'] = convert_image_to_base64_in_folder(profile['avator'])
     user['users'] = [u.to_dict() for u in User.get_users()]
