@@ -500,7 +500,7 @@ def stem_app():
 
 
 
-@accounts.route('/newx-vtqu.onrender.com/stem-app-route',methods=['GET'])
+@accounts.route('/stem-app-route',methods=['GET'])
 def stemapproute():
     print("this user here ",session.get(user))
     email = session.get('email')
