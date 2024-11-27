@@ -502,7 +502,7 @@ def stem_app():
 
 @accounts.route('/stem-app-route',methods=['GET'])
 def stemapproute():
-    print("this user here ",session.get(user))
+    print("this user here ",session.get("user"))
     email = session.get('email')
     if not email:
         return redirect(url_for('accounts.login'))
