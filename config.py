@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "accounts", "static", "assets")
-
+UPLOAD_FOLDER_SUPPORTING_DOCUMENTS = os.path.join(MEDIA_ROOT, "supporting_documents")
 UPLOAD_FOLDER = os.path.join(MEDIA_ROOT, "profile")
 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -27,7 +27,7 @@ class BaseConfig:
     WTF_CSRF_SECRET_KEY = os.getenv("CSRF_SECRET_KEY", None)
     WTF_CSRF_ENABLED = True
 
-
+    UPLOAD_FOLDER_SUPPORTING_DOCUMENTS = os.path.join(MEDIA_ROOT, "supporting_documents")
     # SQLAlchemy (ORM) configuration
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -49,11 +49,11 @@ class BaseConfig:
 
 class Development(BaseConfig):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", None)
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")
 
 
 class Production(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", None)
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")
 
 
 class Testing(BaseConfig):

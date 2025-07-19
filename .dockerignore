@@ -1,0 +1,30 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore environment files and secrets
+.env
+env
+*.env
+secrets.json
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore Docker-related leftovers
+*.log
+*.swp
+.DS_Store
+
+# Ignore node_modules if using JavaScript/Node
+node_modules/
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore test files (optional)
+tests/
+*.test.py

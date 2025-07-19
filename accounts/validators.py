@@ -14,7 +14,7 @@ class Unique(object):
         self.message = message
 
     def __call__(self, form, field):
-        if self.instance.query.filter(self.field == field.data).first():
+        #if self.instance.query.filter(self.field == field.data).first():
             if not self.message:
                 self.message = "{} already exists.".format(field.name)
             raise ValidationError(self.message)

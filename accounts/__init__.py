@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from types import MappingProxyType
 
-from sqlalchemy.exc import DatabaseError
+
 from werkzeug.exceptions import (
     BadRequest,
     Unauthorized,
@@ -80,15 +80,11 @@ def config_extention(app):
     """
     from .extensions import login_manager
     from .extensions import bootstrap
-    from .extensions import database
-    from .extensions import migrate
     from .extensions import csrf
     from .extensions import mail
 
     login_manager.init_app(app)
     bootstrap.init_app(app)
-    database.init_app(app)
-    migrate.init_app(app, db=database)
     csrf.init_app(app)
     mail.init_app(app)
 
@@ -99,7 +95,7 @@ def config_login_manager(manager):
     """
     Configure with Flask-Login manager.
     """
-    from .models import User
+    from .dbqueries import get_user_by_id
 
     manager.login_message = "You are not logged in to your account."
     manager.login_message_category = "warning"
@@ -107,7 +103,7 @@ def config_login_manager(manager):
 
     @manager.user_loader
     def user_loader(user_id):
-        return User.get_user_by_id(user_id)
+        return get_user_by_id(user_id)
 
 
 def config_errorhandler(app):

@@ -28,7 +28,7 @@ from accounts.validators import (
     StrongPhone,
     StrongPassword
 )
-from accounts.models import User
+
 
 
 class RegisterForm(FlaskForm):
@@ -51,7 +51,7 @@ class RegisterForm(FlaskForm):
         DataRequired(),
         Email(),
         Length(min=8, max=120),
-        Unique(User, User.email, message='Email address already registered with us.')
+        #Unique(User, User.email, message='Email address already registered with us.')
     ])
     
     gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female')], default='male', validators=[DataRequired()])
@@ -59,7 +59,13 @@ class RegisterForm(FlaskForm):
     contact_number = StringField('Phone Number', validators=[DataRequired(), Length(min=10, max=15), StrongPhone()])
     address = TextAreaField('Address', validators=[Length(min=5, max=120)], render_kw={'rows': 1})
     postal_code = StringField('Postal Code', validators=[DataRequired(), Length(min=4, max=4)])
-    role = SelectField('Role', choices=[('admin', 'Admin'), ('volunteer', 'Volunteer'), ('student', 'Student')], validators=[DataRequired()])
+    #role = SelectField('Role', choices=[('admin', 'Admin'), ('volunteer', 'Volunteer'), ('student', 'Student'),('customer','Customer'),('supplier','Supplier'),('distributor','Distributor')], validators=[DataRequired()])
+    role = SelectField('Role', choices=[('student', 'Student'), ('tutor', 'Tutor'),('customer','Customer'),('supplier','Supplier'),('distributor','Distributor'),('admin', 'Admin'),],default='student', validators=[DataRequired()])
+    
+    # Additional fields for volunteer
+    id_copy = FileField('Upload ID Copy', validators=[FileAllowed(['pdf'], message='Please upload PDF only.'), FileSize(max_size=2000000, message='ID copy size should not greater than 2MB.')])
+    certificates = FileField('Upload Certificates', validators=[FileAllowed(['pdf'], message='Please upload PDF only.'), FileSize(max_size=2000000, message='Certificates size should not greater than 2MB.')])
+    
     password = PasswordField('Password', validators=[DataRequired(), StrongPassword(), Length(min=8, max=20)])
     
     remember = BooleanField('I agree to the terms and conditions', validators=[DataRequired()])

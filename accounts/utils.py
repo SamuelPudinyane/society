@@ -28,12 +28,12 @@ def unique_security_token() -> t.AnyStr:
     Returns:
         str: A unique security token.
     """
-    from .models import UserSecurityToken
+   
 
     generated_token = secrets.token_hex()
-
-    token_exist = UserSecurityToken.is_exists(generated_token)
-
+    from accounts.dbqueries import (is_token_exists)
+    token_exist = generated_token
+    token_exist=is_token_exists(token_exist)
     if not token_exist:
         return generated_token
 
@@ -62,9 +62,11 @@ def get_full_url(endpoint: str) -> str:
     Returns:
         str: The full `URL`.
     """
+   
+
     domain = current_app.config["SITE_URL"]
-    Domain='https://newx-vtqu.onrender.com'
-    return "".join([Domain, endpoint])
+    # Domain='https://newx-vtqu.onrender.com'
+    return "".join([domain, endpoint])
 
 
 def remove_existing_file(path=None):
