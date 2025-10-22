@@ -1052,35 +1052,21 @@ def get_users_with_profiles_by_id(user_id):
 
 
 def print_all_tables():
-    """
-    Fetches all tables in the current database and prints their names.
-    """
-    conn = None
-    cursor = None
     try:
-        # Get the connection
-        conn = get_connection()  # Ensure this returns a psycopg2 connection
-        cursor = conn.cursor()
-        
-        # Query to get all table names in public schema
-        cursor.execute("""
+        conn = get_connection()  # SQLAlchemy Engine or Connection
+        # Execute raw SQL
+        result = conn.execute(text("""
             SELECT table_schema, table_name
             FROM information_schema.tables
-            WHERE table_type = 'BASE TABLE'
+            WHERE table_type='BASE TABLE'
               AND table_schema NOT IN ('pg_catalog', 'information_schema')
             ORDER BY table_schema, table_name;
-        """)
+        """))
         
-        tables = cursor.fetchall()
+        tables = result.fetchall()
         print("Tables in database:")
         for schema, table in tables:
             print(f"{schema}.{table}")
-    
+
     except Exception as e:
         print(f"Error fetching tables: {e}")
-    
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
