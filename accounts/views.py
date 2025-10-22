@@ -118,7 +118,7 @@ def register() -> Response:
             else:
                 user = insertUserIntodb(first_name,last_name,email,contact_number,occupation,gender,date_of_birth,address,postal_code,role,password)
                 # Sends account confirmation mail to the user.
-                send_confirmation(user['email'])
+                send_confirmation([email])
 
             flash('A confirmation link sent to your email. Please verify your account.', 'success')
             return redirect(url_for('accounts.login'))
