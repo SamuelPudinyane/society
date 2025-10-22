@@ -17,7 +17,7 @@ class BaseConfig:
     DEBUG = False
     TESTING = False
 
-    SITE_URL = os.getenv("SITE_DOMAIN", "https://society-90dt.onrender.com/")
+    SITE_URL = os.getenv("SITE_DOMAIN", "http://localhost:5000")
 
     # Site secret key or bootstrap UI theme.
     SECRET_KEY = os.getenv("SECRET_KEY", "my-sekret-key")
@@ -59,7 +59,7 @@ class Production(BaseConfig):
 
 class Testing(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Disable CSRF protection for testing.

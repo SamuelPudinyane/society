@@ -52,10 +52,7 @@ load_dotenv()
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 app = Flask(__name__, static_folder='static') 
 CORS(app)
-db = SQLAlchemy()
-migrate = Migrate()
-db.init_app(app)
-migrate.init_app(app, db)
+
 
 @accounts.route('/register', methods=['GET', 'POST'])
 def register() -> Response:

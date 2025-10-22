@@ -15,10 +15,7 @@ config_type = os.getenv("FLASK_ENV", "development")
 # Create app
 app = create_app(config_type)
 
-# Setup Migrate
-db = SQLAlchemy()
-migrate = Migrate()
-migrate.init_app(app, db)
+
 
 
 
