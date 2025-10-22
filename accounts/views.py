@@ -31,6 +31,8 @@ import os
 import shutil
 import json
 import urllib.parse
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_cors import CORS,cross_origin
 from accounts.dbqueries import (insertUserIntodb,authenticate,get_user_by_email,verify_token,get_user_by_id,activate_user_and_expire_token,
                                 get_users,reset_password_and_expire_token,check_password,update_password,update_user_details,update_user_profile,
@@ -48,6 +50,11 @@ from config import (
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 app = Flask(__name__, static_folder='static') 
 CORS(app)
+db = SQLAlchemy()
+migrate = Migrate()
+db.init_app(app)
+migrate.init_app(app, db)
+
 @accounts.route('/register', methods=['GET', 'POST'])
 def register() -> Response:
     
