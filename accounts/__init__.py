@@ -16,6 +16,9 @@ from flask import Flask as FlaskAuth
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 
 def create_app(config_type):
