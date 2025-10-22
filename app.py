@@ -18,7 +18,6 @@ app = create_app(config_type)
 # Setup Migrate
 db = SQLAlchemy()
 migrate = Migrate()
-db.init_app(app)
 migrate.init_app(app, db)
 
 

@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from types import MappingProxyType
-
-
+from flask import Blueprint
 from werkzeug.exceptions import (
     BadRequest,
     Unauthorized,
@@ -39,7 +38,7 @@ def create_app(config_type):
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024
-    
+
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
@@ -91,8 +90,7 @@ def config_blueprint(app):
     """
     Configure and register blueprints with the Flask application.
     """
-    from .views import accounts
-
+    accounts = Blueprint('accounts', __name__, template_folder='templates')
     app.register_blueprint(accounts)
 
 
