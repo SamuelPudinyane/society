@@ -47,6 +47,8 @@ from config import (
     UPLOAD_FOLDER_SUPPORTING_DOCUMENTS,
    
 )
+from dotenv import load_dotenv
+load_dotenv()
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 app = Flask(__name__, static_folder='static') 
 CORS(app)

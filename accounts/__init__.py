@@ -19,6 +19,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+DATABASE_URI=(f"postgresql+psycopg://randrefinerydb_hdcz_user:NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD@dpg-cudl8flumphs73cpbcj0-a:5432/randrefinerydb_hdcz?sslmode=disable")
 
 
 def create_app(config_type):
@@ -28,7 +29,7 @@ def create_app(config_type):
     app = Flask(__name__, template_folder="templates")
 
     # Load database URI
-    database_uri = os.environ.get('DATABASE_URI')
+    database_uri = os.environ.get('DATABASE_URI',DATABASE_URI)
     if not database_uri:
         raise RuntimeError("DATABASE_URI environment variable not set")
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
