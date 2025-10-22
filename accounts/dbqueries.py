@@ -10,6 +10,8 @@ from werkzeug.security import (
     check_password_hash,
     generate_password_hash,
 )
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
 from accounts.utils import unique_security_token
 import os
 import pyodbc
@@ -29,11 +31,36 @@ connection_string=F"""
 
 
 '''
+# def get_connection():
+#     conn = pyodbc.connect(conn_str)
+#     return conn
+
+# Online
+DB_SERVER = os.getenv("DB_SERVER", "dpg-cudl8flumphs73cpbcj0-a")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "randrefinerydb_hdcz")
+DB_USER = os.getenv("DB_USER", "randrefinerydb_hdcz_user")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD")
+
+
+
 def get_connection():
-    conn = pyodbc.connect(conn_str)
-    return conn
+    try:
+        conn =(f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
+        engine = create_engine(conn_str)
+        connection = engine.connect()
+        print("✅ Database connection successful")
+        return connection
+    except SQLAlchemyError as e:
+        print("❌ Database connection failed!")
+        print(f"Error details: {e}")
+        return None
+   
+
 
 import json
+
+
 
 def insert_copies(id_copy,certificate,user_id):
 
