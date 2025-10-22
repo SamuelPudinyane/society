@@ -1055,9 +1055,11 @@ def print_all_tables():
     """
     Fetches all tables in the current database and prints their names.
     """
+    conn = None
+    cursor = None
     try:
         # Get the connection
-        conn = get_connection()  # Make sure this returns psycopg2 connection
+        conn = get_connection()  # Ensure this returns a psycopg2 connection
         cursor = conn.cursor()
         
         # Query to get all table names in public schema
