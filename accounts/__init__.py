@@ -36,8 +36,7 @@ def create_app(config_type):
     config_application(app, config_type)
 
     # Initialize extensions
-    db.init_app(app)
-    Migrate(app, db)
+   
 
     # Configure extensions, blueprints, error handlers
     config_extention(app)
