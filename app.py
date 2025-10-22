@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from accounts import create_app
 from flask_migrate import Migrate
-from flask_script import Manager
+
 
 # Load environment variables from .env
 load_dotenv()
