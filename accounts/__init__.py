@@ -15,11 +15,15 @@ from werkzeug.exceptions import (
 from flask import Flask as FlaskAuth
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URI=(f"postgresql+psycopg://randrefinerydb_hdcz_user:NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD@dpg-cudl8flumphs73cpbcj0-a:5432/randrefinerydb_hdcz?sslmode=disable")
+
+db = SQLAlchemy()
+migrate = Migrate()
 
 
 def create_app(config_type):
@@ -35,7 +39,10 @@ def create_app(config_type):
     app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024
-
+    
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
     # Configure app
     config_application(app, config_type)
 
