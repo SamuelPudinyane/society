@@ -103,7 +103,7 @@ def insertUserIntodb(first_name, last_name, email, contact_number, occupation, g
     try:
         password_hashed = set_password(password)
         user_id = set_password(email)  # You can replace this with a proper unique ID generator if needed
-
+        
         query = text("""
             INSERT INTO Users (
                 user_id, first_name, last_name, email, contact_number,
