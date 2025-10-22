@@ -446,7 +446,7 @@ def change_password() -> Response:
 @accounts.route("/home")
 def index() -> Response:
     user=session.get('user')
-    list_all_tables()
+    print_all_tables()
     """
     Render the homepage for authenticated users.
 
