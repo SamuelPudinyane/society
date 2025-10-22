@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from accounts.utils import unique_security_token
 import os
-import pyodbc
+
 load_dotenv()
 # conn_str = os.getenv("ODBC_CONN_STR")
 # '''
