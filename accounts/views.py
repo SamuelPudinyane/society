@@ -34,7 +34,7 @@ import urllib.parse
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS,cross_origin
-from accounts.dbqueries import (list_all_tables,insertUserIntodb,authenticate,get_user_by_email,verify_token,get_user_by_id,activate_user_and_expire_token,
+from accounts.dbqueries import (print_all_tables,insertUserIntodb,authenticate,get_user_by_email,verify_token,get_user_by_id,activate_user_and_expire_token,
                                 get_users,reset_password_and_expire_token,check_password,update_password,update_user_details,update_user_profile,
                                 get_profile_by_user_id,activate_user,send_confirmation,verify_user,get_users_and_profiles,get_users_with_profiles_by_id,
                                 delete_user_and_profiles,insert_copies)
