@@ -118,9 +118,10 @@ def register() -> Response:
             else:
                 user = insertUserIntodb(first_name,last_name,email,contact_number,occupation,gender,date_of_birth,address,postal_code,role,password)
                 # Sends account confirmation mail to the user.
+                user["email"]=email
                 try:
                     # Attempt to send the confirmation email
-                    send_confirmation(user['email'])
+                    send_confirmation(user)
                 except Exception as e:
                     # Log the error, but don't stop registration
                     print(f"Error sending confirmation email: {e}")
