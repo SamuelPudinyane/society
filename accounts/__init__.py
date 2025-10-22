@@ -13,17 +13,24 @@ from werkzeug.exceptions import (
 )
 
 from flask import Flask as FlaskAuth
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import os
 
+db = SQLAlchemy()
 
 def create_app(config_type):
     """
     Create and configure the Flask application instance.
     """
     app = FlaskAuth(__name__, template_folder="templates")
-
+    # Load env variables
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024
     # application configuration.
     config_application(app, config_type)
-
+    db.init_app(app)
     # configure application extension.
     config_extention(app)
 
