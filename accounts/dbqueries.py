@@ -16,21 +16,21 @@ from accounts.utils import unique_security_token
 import os
 import pyodbc
 load_dotenv()
-conn_str = os.getenv("ODBC_CONN_STR")
-'''
-DRIVER_NAME='SQL SERVER'
-SERVER_NAME='APB-JBS02-113L\SQLEXPRESS'
-DATABASE_NAME='newx'
+# conn_str = os.getenv("ODBC_CONN_STR")
+# '''
+# DRIVER_NAME='SQL SERVER'
+# SERVER_NAME='APB-JBS02-113L\SQLEXPRESS'
+# DATABASE_NAME='newx'
 
-connection_string=F"""
-    DRIVER={{{DRIVER_NAME}}};
-    SERVER={SERVER_NAME};
-    DATABASE={DATABASE_NAME};
-    Trust_Connection=yes
-"""
+# connection_string=F"""
+    # DRIVER={{{DRIVER_NAME}}};
+    # SERVER={SERVER_NAME};
+    # DATABASE={DATABASE_NAME};
+    # Trust_Connection=yes
+# """
 
 
-'''
+# '''
 # def get_connection():
 #     conn = pyodbc.connect(conn_str)
 #     return conn
