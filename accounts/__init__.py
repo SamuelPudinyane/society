@@ -17,30 +17,35 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 
-db = SQLAlchemy()
 
 def create_app(config_type):
     """
     Create and configure the Flask application instance.
     """
-    app = FlaskAuth(__name__, template_folder="templates")
-    # Load env variables
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+    app = Flask(__name__, template_folder="templates")
+
+    # Load database URI
+    database_uri = os.environ.get('DATABASE_URI')
+    if not database_uri:
+        raise RuntimeError("DATABASE_URI environment variable not set")
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 * 1024
-    # application configuration.
+
+    # Configure app
     config_application(app, config_type)
+
+    # Initialize extensions
     db.init_app(app)
-    # configure application extension.
+    Migrate(app, db)
+
+    # Configure extensions, blueprints, error handlers
     config_extention(app)
-
-    # configure application blueprints.
     config_blueprint(app)
-
-    # configure error handlers.
     config_errorhandler(app)
 
     return app
+
 
 
 def config_application(app, config_type):

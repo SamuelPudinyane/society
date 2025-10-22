@@ -17,7 +17,7 @@ class BaseConfig:
     DEBUG = False
     TESTING = False
 
-    SITE_URL = os.getenv("SITE_DOMAIN", "http://localhost:5000")
+    SITE_URL = os.getenv("SITE_DOMAIN", "https://society-90dt.onrender.com/")
 
     # Site secret key or bootstrap UI theme.
     SECRET_KEY = os.getenv("SECRET_KEY", "my-sekret-key")
