@@ -1051,34 +1051,34 @@ def get_users_with_profiles_by_id(user_id):
 
 
 
-def list_all_tables():
+def print_all_tables():
     """
-    Retrieves and prints all table names from the current PostgreSQL database.
+    Fetches all tables in the current database and prints their names.
     """
-    query = """
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-        ORDER BY table_name;
-    """
-
     try:
-        conn = get_connection()
+        # Get the connection
+        conn = get_connection()  # Make sure this returns psycopg2 connection
         cursor = conn.cursor()
-        cursor.execute(query)
-
-        tables = cursor.fetchall()  # List of tuples
-
-        print("📋 Tables in database:")
-        for (table_name,) in tables:
-            print(f"- {table_name}")
-
-        return [t[0] for t in tables]
-
+        
+        # Query to get all table names in public schema
+        cursor.execute("""
+            SELECT table_schema, table_name
+            FROM information_schema.tables
+            WHERE table_type = 'BASE TABLE'
+              AND table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY table_schema, table_name;
+        """)
+        
+        tables = cursor.fetchall()
+        print("Tables in database:")
+        for schema, table in tables:
+            print(f"{schema}.{table}")
+    
     except Exception as e:
-        print(f"⚠️ Error fetching tables: {e}")
-        return []
-
+        print(f"Error fetching tables: {e}")
+    
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
