@@ -465,7 +465,7 @@ def profile() -> Response:
 
     # Retrieve the fresh user instance based on their ID
     user = get_users_with_profiles_by_id(user_profile['user_id'])
-    print("user profile ",user)
+  
   
 
     if form.validate_on_submit():
