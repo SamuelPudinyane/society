@@ -49,7 +49,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD")
 
 def get_connection():
     try:
-        conn =(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
+        conn =(f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
         engine = create_engine(conn)
         connection = engine.connect()
         print("✅ Database connection successful")
