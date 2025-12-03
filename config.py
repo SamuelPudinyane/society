@@ -45,6 +45,14 @@ class BaseConfig:
     RESET_PASSWORD_SALT = os.getenv("RESET_PASSWORD_SALT", "reset_password_salt")
     CHANGE_EMAIL_SALT = os.getenv("CHANGE_EMAIL_SALT", "change_email_salt")
 
+    # Analytics configuration
+    # Time window to consider sessions "active" for admin metrics
+    # Set to minutes; None disables window and uses latest-event logic only
+    ANALYTICS_ACTIVE_WINDOW_MINUTES = int(os.getenv("ANALYTICS_ACTIVE_WINDOW_MINUTES", "30"))
+
+    # Auto-logout after inactivity (minutes)
+    INACTIVITY_LOGOUT_MINUTES = int(os.getenv("INACTIVITY_LOGOUT_MINUTES", "60"))
+
 
 
 class Development(BaseConfig):

@@ -155,19 +155,19 @@
 <body>
         <div class="holder">
             <div class="top-nav">
-                <div class="logo"><img src="../static/images/2new logo.png" alt="" height="70px" width="200px"></div>
+                <div class="logo"><img src="{{ url_for('static', filename='images/2new logo.png') }}" alt="" height="70" width="200"></div>
 
                 <div class="nav-icons">
                     <div class="location">
-                        <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
+                        <img src="{{ url_for('static', filename='images/Group 261.png') }}" alt="Location Icon" width="30">
                         <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
                     </div>
                     <div class="phone">
-                        <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                        <img src="{{ url_for('static', filename='images/Group 244.png') }}" alt="Phone Icon" width="30"><br>
                         <span>(+27) 87 820 0840</span>
                     </div>
                     <div class="email">
-                        <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
+                        <img src="{{ url_for('static', filename='images/Group 257.png') }}" alt="Email Icon" width="30">
                         <span>systemsadmin@jbs.ac.za</span>
                     </div>
                 </div>
@@ -257,7 +257,7 @@
             <div class="footer">
                 <div class="column">
                     <h4></h4>
-                    <img src="./images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
+                    <img src="{{ url_for('static', filename='images/2new black.png') }}" alt="Company Logo" width="220" height="75"><br>
                     <div class="footer-iconz">
                         <i class="fab fa-facebook-f"></i>
                         <i class="fab fa-instagram"></i>
@@ -341,24 +341,18 @@
         // create method that counts the number of clicks, events,type of event take 
         // Function to count clicks on the HTML button
         function countClicks() {
-            // Get the HTML button element by its class name
-            var button = document.querySelector('.msg-btn');
-
-            // Initialize a variable to store the count of clicks
-            var clickCount = 0;
-
-            // Add a click event listener to the button
+            const button = document.querySelector('.msg-btn');
+            if (!button) return; // Guard: element not present on this page
+            let clickCount = 0;
             button.addEventListener('click', function () {
-                // Increment the click count each time the button is clicked
                 clickCount++;
-
-                // Log the current click count to the console
                 console.log('Number of clicks: ' + clickCount);
             });
         }
 
-        // Call the function to start counting clicks
-        countClicks();
+        document.addEventListener('DOMContentLoaded', () => {
+            countClicks();
+        });
 
     </script>
 

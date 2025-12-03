@@ -1,4 +1,12 @@
-from flask_bootstrap import Bootstrap5
+try:
+	from bootstrap_flask import Bootstrap5 as _Bootstrap
+except Exception:
+	try:
+		from flask_bootstrap import Bootstrap5 as _Bootstrap
+	except Exception:
+		class _Bootstrap:
+			def init_app(self, app):
+				pass
 from flask_login import LoginManager
 from flask_moment import Moment
 from flask_wtf import CSRFProtect
@@ -9,7 +17,7 @@ from flask_mail import Mail
 
 
 # A bootstrap5 class for styling client side. 
-bootstrap = Bootstrap5()
+bootstrap = _Bootstrap()
 
 # csrf protection for form submission.
 csrf = CSRFProtect()

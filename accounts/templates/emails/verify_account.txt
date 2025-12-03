@@ -1,5 +1,23 @@
-Hi, {{ fullname }}
-Your Registration is completed. 
+=========================================
+SOCIETY - Account Verification
+=========================================
 
-Please click the following link to confirm your account.
+Hi {{ fullname }}! 👋
+
+Welcome to Society! Your registration has been completed successfully.
+
+To activate your account and start using all our features, please click the link below:
+
+🔗 Verification Link:
 {{ verification_link }}
+
+⏰ This link is valid for 24 hours.
+
+If you didn't create an account with us, please ignore this email.
+
+Need help? Contact our support team.
+
+Best regards,
+The Society Team
+
+© 2025 Society. All rights reserved.

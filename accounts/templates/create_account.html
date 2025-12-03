@@ -308,7 +308,7 @@
             <div class="footer">
                 <div class="column">
                     <h4></h4>
-                    <img src="./images/2new black.png" alt="Company Logo" width="220px" height="75px"><br>
+                    <img src="{{ url_for('static', filename='images/2new black.png') }}" alt="Company Logo" width="220" height="75"><br>
                     <div class="footer-iconz">
                         <i class="fab fa-facebook-f"></i>
                         <i class="fab fa-instagram"></i>
@@ -366,13 +366,13 @@
     <!-- Initialize Swiper -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const roleField = document.querySelector('.form_select');
+                        const roleField = document.querySelector('.form_select');
             const idCopyField = document.getElementById('id-copy-field');
             const certificatesField = document.getElementById('certificates-field');
             console.log("something happening ",roleField)
             // Function to toggle visibility of additional fields for volunteers
             function toggleVolunteerFields() {
-              if (roleField.value === 'tutor') {
+                            if (roleField && roleField.value === 'tutor') {
                 
                 idCopyField.style.display = 'block';
                 certificatesField.style.display = 'block';
@@ -386,7 +386,9 @@
             toggleVolunteerFields();
         
             // Add event listener to role field
-            roleField.addEventListener('change', toggleVolunteerFields);
+                        if (roleField) {
+                            roleField.addEventListener('change', toggleVolunteerFields);
+                        }
         
             // Function to focus on the first visible input field
             function focusOnFirstVisibleInput() {
@@ -423,24 +425,18 @@
         // create method that counts the number of clicks, events,type of event take 
         // Function to count clicks on the HTML button
         function countClicks() {
-            // Get the HTML button element by its class name
-            var button = document.querySelector('.msg-btn');
-
-            // Initialize a variable to store the count of clicks
-            var clickCount = 0;
-
-            // Add a click event listener to the button
+            const button = document.querySelector('.msg-btn');
+            if (!button) return; // Guard: element not present on this page
+            let clickCount = 0;
             button.addEventListener('click', function () {
-                // Increment the click count each time the button is clicked
                 clickCount++;
-
-                // Log the current click count to the console
                 console.log('Number of clicks: ' + clickCount);
             });
         }
 
-        // Call the function to start counting clicks
-        countClicks();
+        document.addEventListener('DOMContentLoaded', () => {
+            countClicks();
+        });
 
     </script>
 

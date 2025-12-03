@@ -1,6 +1,7 @@
 import re
 
 from wtforms import ValidationError
+from datetime import date
 
 
 class Unique(object):
@@ -28,10 +29,12 @@ class StrongNames(object):
     def __init__(self, message=None):
         self.message = message
         if not self.message:
-            self.message = "Field contains only alphabet."
+            self.message = "Only letters, spaces, hyphens or apostrophes allowed."
 
     def __call__(self, form, field):
-        if not re.match("^[a-zA-Z]+$", field.data):
+        value = (field.data or "").strip()
+        # Allow letters, spaces, hyphens (-) and apostrophes (')
+        if not re.match(r"^[A-Za-z][A-Za-z\s\-']*$", value):
             raise ValidationError(self.message)
 
 
@@ -73,4 +76,30 @@ class StrongPassword(object):
             r"(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$",
             password,
         ):
+            raise ValidationError(self.message)
+
+
+class MinAgeYears(object):
+    """
+    Validator that ensures the user is at least `years` old.
+    """
+
+    def __init__(self, years=5, message=None):
+        self.years = years
+        self.message = message or f"You must be at least {years} years old."
+
+    def _years_ago(self, d: date, years: int) -> date:
+        try:
+            return d.replace(year=d.year - years)
+        except ValueError:
+            # Handle Feb 29 -> Feb 28 for non-leap-year
+            return d.replace(month=2, day=28, year=d.year - years)
+
+    def __call__(self, form, field):
+        dob = field.data
+        if not isinstance(dob, date):
+            # WTForms DateField usually provides date, but guard anyway
+            raise ValidationError("Invalid date.")
+        threshold = self._years_ago(date.today(), self.years)
+        if dob > threshold:
             raise ValidationError(self.message)

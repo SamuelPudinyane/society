@@ -1,63 +1,59 @@
 import json
-import requests
-from flask import jsonify
-from datetime import datetime, timedelta
-import time
-import typing as t
-from typing import Optional, Union
-from dotenv import load_dotenv
-from werkzeug.security import (
-    check_password_hash,
-    generate_password_hash,
-)
-from werkzeug.security import generate_password_hash
-from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
-from accounts.utils import unique_security_token
 import os
 import psycopg2
+from psycopg2 import errors as pg_errors
 from accounts import db
 from sqlalchemy import text
+from dotenv import load_dotenv
+import typing as t
+from werkzeug.security import generate_password_hash, check_password_hash
+from accounts.utils import unique_security_token
+
+# Load environment variables first, then read Postgres connection details
 load_dotenv()
-# conn_str = os.getenv("ODBC_CONN_STR")
-# '''
-# DRIVER_NAME='SQL SERVER'
-# SERVER_NAME='APB-JBS02-113L\SQLEXPRESS'
-# DATABASE_NAME='newx'
-
-# connection_string=F"""
-    # DRIVER={{{DRIVER_NAME}}};
-    # SERVER={SERVER_NAME};
-    # DATABASE={DATABASE_NAME};
-    # Trust_Connection=yes
-# """
+# Postgres connection details are read from env
+# PG_HOST, PG_PORT, PG_DB, PG_USER, PG_PASSWORD or DATABASE_URI
+PG_HOST = os.getenv("PG_HOST", "localhost")
+PG_PORT = os.getenv("PG_PORT", "5432")
+PG_DB = os.getenv("PG_DB", "society_master")
+PG_USER = os.getenv("PG_USER", "postgres")
+PG_PASSWORD = os.getenv("PG_PASSWORD", "malvapudding78*")
 
 
 # '''
-# def get_connection():
-#     conn = pyodbc.connect(conn_str)
-#     return conn
+def get_connection():
+    """Get a psycopg2 connection to Postgres."""
+    try:
+        return psycopg2.connect(
+            host=PG_HOST,
+            port=PG_PORT,
+            dbname=PG_DB,
+            user=PG_USER,
+            password=PG_PASSWORD,
+        )
+    except Exception as e:
+        raise RuntimeError(f"Failed to connect to Postgres: {e}")
 
 # Online
-DB_SERVER = os.getenv("DB_SERVER", "dpg-cudl8flumphs73cpbcj0-a")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "randrefinerydb_hdcz")
-DB_USER = os.getenv("DB_USER", "randrefinerydb_hdcz_user")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD")
+# DB_SERVER = os.getenv("DB_SERVER", "dpg-cudl8flumphs73cpbcj0-a")
+# DB_PORT = os.getenv("DB_PORT", "5432")
+# DB_NAME = os.getenv("DB_NAME", "randrefinerydb_hdcz")
+# DB_USER = os.getenv("DB_USER", "randrefinerydb_hdcz_user")
+# DB_PASSWORD = os.getenv("DB_PASSWORD", "NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD")
 
 
 
-def get_connection():
-    try:
-        conn =(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
-        engine = create_engine(conn)
-        connection = engine.connect()
-        print("✅ Database connection successful")
-        return connection
-    except SQLAlchemyError as e:
-        print("❌ Database connection failed!")
-        print(f"Error details: {e}")
-        return None
+# def get_connection():
+#     try:
+#         conn =(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
+#         engine = create_engine(conn)
+#         connection = engine.connect()
+#         print("✅ Database connection successful")
+#         return connection
+#     except SQLAlchemyError as e:
+#         print("❌ Database connection failed!")
+#         print(f"Error details: {e}")
+#         return None
    
 
 
@@ -70,31 +66,42 @@ def insert_copies(id_copy, certificate, user_id):
     Inserts a new copy record into the 'copies' table and returns the inserted row as a dictionary.
     """
     try:
-        query = text("""
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Insert the copy record with OUTPUT clause for SQL Server
+        cursor.execute(
+            """
             INSERT INTO copies (id_copy, certificate, user_id)
-            VALUES (:id_copy, :certificate, :user_id)
+            VALUES (%s, %s, %s)
             RETURNING *
-        """)
+            """,
+            (id_copy, certificate, user_id),
+        )
         
-        result = db.session.execute(query, {
-            "id_copy": id_copy,
-            "certificate": certificate,
-            "user_id": user_id
-        })
-        db.session.commit()
+        # Fetch the inserted record
+        inserted_row = cursor.fetchone()
+        conn.commit()
         
-        inserted_row = result.fetchone()
         if inserted_row:
-            # Convert the row to a dictionary
-            return dict(inserted_row._mapping)
+            # Convert to dictionary
+            columns = [desc.name for desc in cursor.description]
+            return dict(zip(columns, inserted_row))
         
         return None
 
     except Exception as e:
         print("Error inserting copy:", e)
         return None
+        
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
-def set_password(password):
+def set_password(password: str) -> str:
+    """Hash a plaintext string (password or identifier)."""
     return generate_password_hash(password)
 
 def insertUserIntodb(first_name, last_name, email, contact_number, occupation, gender, date_of_birth, address, postal_code, role, password):
@@ -105,68 +112,79 @@ def insertUserIntodb(first_name, last_name, email, contact_number, occupation, g
         password_hashed = set_password(password)
         user_id = set_password(email)  # You can replace this with a proper unique ID generator if needed
         
-        query = text("""
-            INSERT INTO Users (
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Insert the user with OUTPUT clause for SQL Server
+        query = """
+                INSERT INTO "Users" (
                 user_id, first_name, last_name, email, contact_number,
                 occupation, gender, date_of_birth, address, postal_code,
                 role, password
             )
-            VALUES (
-                :user_id, :first_name, :last_name, :email, :contact_number,
-                :occupation, :gender, :date_of_birth, :address, :postal_code,
-                :role, :password
-            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING *
-        """)
+        """
 
-        result = db.session.execute(query, {
-            "user_id": user_id,
-            "first_name": first_name,
-            "last_name": last_name,
-            "email": email,
-            "contact_number": contact_number,
-            "occupation": occupation,
-            "gender": gender,
-            "date_of_birth": date_of_birth,
-            "address": address,
-            "postal_code": postal_code,
-            "role": role,
-            "password": password_hashed
-        })
-        db.session.commit()
-
-        inserted_user = result.fetchone()
+        cursor.execute(
+            query,
+            (
+                user_id, first_name, last_name, email, contact_number,
+                occupation, gender, date_of_birth, address, postal_code,
+                role, password_hashed,
+            ),
+        )
+        inserted_user = cursor.fetchone()
+        conn.commit()
+        
         if inserted_user:
-            return dict(inserted_user._mapping)
+            # Convert to dictionary
+            columns = [desc.name for desc in cursor.description]
+            user_dict = dict(zip(columns, inserted_user))
+            return user_dict
 
         return None
 
     except Exception as e:
-        print("Error inserting user:", e)
+        # Provide clearer feedback for common constraint violations
+        if isinstance(e, pg_errors.UniqueViolation):
+            print("Error inserting user: duplicate email (unique constraint)")
+        else:
+            print(f"Error inserting user: {e}")
+        print(f"Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
+        if 'conn' in locals():
+            conn.rollback()
         return None
+    
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 
 
 def authenticate(email: str, password):
     """
-    Authenticates a user based on email and password using SQLAlchemy.
+    Authenticates a user based on email and password using pyodbc.
 
     :param email: User's email.
     :param password: User's plain-text password.
     :return: Dictionary of user data if authenticated, else None.
     """
     try:
-        # Query the Users table for the given email
-        query = db.session.execute(
-            "SELECT * FROM Users WHERE email = :email",
-            {"email": email}
-        )
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM "Users" WHERE email = %s', (email,))
+        user_row = cursor.fetchone()
 
-        user_row = query.fetchone()
         if user_row:
-            # Convert SQLAlchemy Row object to dictionary
-            user_data = dict(user_row._mapping)
+            # Convert to dictionary
+            columns = [desc.name for desc in cursor.description]
+            user_data = dict(zip(columns, user_row))
 
             # Check password
             if check_password_hash(user_data['password'], password):
@@ -177,16 +195,16 @@ def authenticate(email: str, password):
     except Exception as e:
         print("Authentication error:", e)
         return None
+    
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 
-def set_password(password):
-        """
-        Sets the password for the user after hashing it.
-
-        :param password: The plain-text password to hash and set.
-        """
-        return generate_password_hash(password)
+# Deduplicated set_password above; removed duplicate definition.
 
 
 def insert_user_Token(user_id):
@@ -199,29 +217,37 @@ def insert_user_Token(user_id):
     token = unique_security_token()
 
     try:
-        # Insert new token using SQLAlchemy
-        query = db.session.execute(
-            """
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Insert new token using pyodbc
+        cursor.execute("""
             INSERT INTO user_token (token, user_id)
             OUTPUT INSERTED.*
-            VALUES (:token, :user_id)
-            """,
-            {"token": token, "user_id": user_id}
-        )
+            VALUES (?, ?)
+        """, (token, user_id))
 
-        inserted_row = query.fetchone()
-        db.session.commit()
+        inserted_row = cursor.fetchone()
+        conn.commit()
 
         if inserted_row:
-            # Convert SQLAlchemy Row object to dictionary
-            return dict(inserted_row._mapping)
+            # Convert to dictionary
+            columns = [desc[0] for desc in cursor.description]
+            return dict(zip(columns, inserted_row))
         
         return None
 
     except Exception as e:
-        db.session.rollback()
+        if 'conn' in locals():
+            conn.rollback()
         print("Error inserting user token:", e)
         return None
+        
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 
@@ -266,21 +292,27 @@ def get_user_by_email(email):
     :return: A dictionary of user columns if found, otherwise an empty dictionary.
     """
     try:
-        result = db.session.execute(
-            "SELECT * FROM Users WHERE email = :email",
-            {"email": email}
-        )
-        user_row = result.fetchone()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM "Users" WHERE email = %s', (email,))
+        user_row = cursor.fetchone()
 
         if user_row:
-            # Convert SQLAlchemy Row object to dictionary
-            return dict(user_row._mapping)
+            # Convert to dictionary
+            columns = [desc.name for desc in cursor.description]
+            return dict(zip(columns, user_row))
 
         return {}
 
     except Exception as e:
         print("Error fetching user by email:", e)
         return {}
+    
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 def verify_token(token, salt, raise_exception: bool = True):
@@ -293,15 +325,21 @@ def verify_token(token, salt, raise_exception: bool = True):
     :return: A dictionary representing the token record if valid, or None if not valid.
     """
     try:
-        result = db.session.execute(
-            "SELECT * FROM user_token WHERE token = :token AND salt = :salt",
-            {"token": token, "salt": salt}
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute(
+            "SELECT * FROM user_token WHERE token = %s AND salt = %s",
+            (token, salt),
         )
-        token_row = result.fetchone()
+        token_row = cursor.fetchone()
 
         if token_row:
-            token_dict = dict(token_row._mapping)
-            # Check if token is expired
+            # Convert to dictionary
+            columns = [desc.name for desc in cursor.description]
+            token_dict = dict(zip(columns, token_row))
+            
+            # Check if token is expired (expire = 0 means not expired, expire = 1 means expired)
             if not token_dict.get('expire', True):
                 return token_dict
 
@@ -315,6 +353,12 @@ def verify_token(token, salt, raise_exception: bool = True):
         if raise_exception:
             raise
         return None
+        
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
     
 
 
@@ -328,11 +372,12 @@ def get_user_by_id(user_id, raise_exception: bool = False):
     """
     try:
         conn = get_connection()
-        result = conn.execute("SELECT * FROM Users WHERE user_id = ?", (user_id,))
-        user = result.fetchone()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM "Users" WHERE user_id = %s', (user_id,))
+        user = cursor.fetchone()
 
         if user:
-            user_dict = dict(zip(result.keys(), user))
+            user_dict = dict(zip([column.name for column in cursor.description], user))
             return user_dict
 
         if raise_exception:
@@ -345,9 +390,12 @@ def get_user_by_id(user_id, raise_exception: bool = False):
         if raise_exception:
             raise
         return None
-
+    
     finally:
-        conn.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 def activate_user_and_expire_token(user_id, auth_token):
@@ -360,14 +408,9 @@ def activate_user_and_expire_token(user_id, auth_token):
     """
     try:
         conn = get_connection()
-
-        # Update user's active status
-        conn.execute("UPDATE Users SET active = 1 WHERE user_id = ?", (user_id,))
-
-        # Expire the token
-        conn.execute("UPDATE user_token SET expire = 1 WHERE token = ?", (auth_token,))
-
-        # Commit the changes
+        cursor = conn.cursor()
+        cursor.execute('UPDATE "Users" SET active = TRUE WHERE user_id = %s', (user_id,))
+        cursor.execute("UPDATE user_token SET expire = TRUE WHERE token = %s", (auth_token,))
         conn.commit()
 
         print(f"User {user_id} activated and token expired successfully.")
@@ -377,6 +420,8 @@ def activate_user_and_expire_token(user_id, auth_token):
         raise Exception("InternalServerError: Unable to activate user and expire token.") from e
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -391,11 +436,13 @@ def get_users():
     conn = get_connection()
     try:
         # Execute the query and fetch all results
-        rows = conn.execute("SELECT * FROM Users").fetchall()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM "Users"')
+        rows = cursor.fetchall()
 
         if rows:
             # Get column names from cursor description
-            columns = [desc[0] for desc in conn.description]
+            columns = [desc.name for desc in cursor.description]
 
             # Map each row to a dictionary
             users_data = [dict(zip(columns, row)) for row in rows]
@@ -408,6 +455,8 @@ def get_users():
         return []
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -424,13 +473,14 @@ def reset_password_and_expire_token(user_id: str, new_password: str, auth_token:
     conn = get_connection()
     try:
         # Update password and expire token using parameterized queries
-        conn.execute(
-            "UPDATE Users SET password = ? WHERE user_id = ?",
-            (set_password(new_password), user_id)
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE "Users" SET password = %s WHERE user_id = %s',
+            (set_password(new_password), user_id),
         )
-        conn.execute(
-            "UPDATE UserSecurityTokens SET expire = 1 WHERE token = ?",
-            (auth_token,)
+        cursor.execute(
+            "UPDATE user_token SET expire = 1 WHERE token = %s",
+            (auth_token,),
         )
 
         # Commit changes
@@ -442,6 +492,8 @@ def reset_password_and_expire_token(user_id: str, new_password: str, auth_token:
         raise Exception("InternalServerError: Unable to reset password and expire token.")
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -460,9 +512,10 @@ def update_password(user_id, new_password):
     conn = get_connection()
     try:
         hashed_password = set_password(new_password)
-        conn.execute(
-            "UPDATE Users SET password = ? WHERE user_id = ?",
-            (hashed_password, user_id)
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE "Users" SET password = %s WHERE user_id = %s',
+            (hashed_password, user_id),
         )
         conn.commit()
         return True
@@ -470,6 +523,8 @@ def update_password(user_id, new_password):
         print("Error while updating password:", error)
         return False
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -489,9 +544,10 @@ def update_user_profile(user_id, bio, avator):
     """
     conn = get_connection()
     try:
-        conn.execute(
-            "UPDATE user_profile SET bio = ?, avator = ? WHERE user_id = ?",
-            (bio, avator, user_id)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE user_profile SET bio = %s, avatar = %s WHERE user_id = %s",
+            (bio, avator, user_id),
         )
         conn.commit()
         return True
@@ -499,6 +555,8 @@ def update_user_profile(user_id, bio, avator):
         print("Error while updating user profile:", error)
         return False
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -523,19 +581,20 @@ def update_user_details(user_id, first_name, last_name, occupation, contact_numb
     """
     conn = get_connection()
     try:
-        conn.execute(
+        cursor = conn.cursor()
+        cursor.execute(
             """
-            UPDATE Users
+            UPDATE "Users"
             SET 
-                first_name = ?, 
-                last_name = ?, 
-                occupation = ?, 
-                contact_number = ?, 
-                address = ?, 
-                postal_code = ?
-            WHERE user_id = ?
+                first_name = %s,
+                last_name = %s,
+                occupation = %s,
+                contact_number = %s,
+                address = %s,
+                postal_code = %s
+            WHERE user_id = %s
             """,
-            (first_name, last_name, occupation, contact_number, address, postal_code, user_id)
+            (first_name, last_name, occupation, contact_number, address, postal_code, user_id),
         )
         conn.commit()
         return True
@@ -543,6 +602,8 @@ def update_user_details(user_id, first_name, last_name, occupation, contact_numb
         print("Error while updating user details:", error)
         return False
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -561,17 +622,19 @@ def get_profile_by_user_id(user_id):
     conn = get_connection()
     try:
         # Execute the query directly
-        row = conn.execute(
-            "SELECT user_id, bio, avatar, created_at, updated_at FROM user_profile WHERE user_id = ?",
-            (user_id,)
-        ).fetchone()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT user_id, bio, avatar, created_at, updated_at FROM user_profile WHERE user_id = %s",
+            (user_id,),
+        )
+        row = cursor.fetchone()
 
         if row:
             # Retrieve column names dynamically
-            columns = [column[0] for column in conn.description]
+            columns = [desc.name for desc in cursor.description]
             # Map row to a dictionary
             profile = dict(zip(columns, row))
-            print("profile ", profile)
+           
             return profile
 
         return None
@@ -581,6 +644,8 @@ def get_profile_by_user_id(user_id):
         return None
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -596,16 +661,9 @@ def activate_user(user_id):
     conn = get_connection()
     try:
         # Activate the user
-        conn.execute(
-            "UPDATE Users SET active = 1 WHERE user_id = ?",
-            (user_id,)
-        )
-
-        # Expire all tokens for the user
-        conn.execute(
-            "UPDATE user_token SET expire = 1 WHERE user_id = ?",
-            (user_id,)
-        )
+        cursor = conn.cursor()
+        cursor.execute('UPDATE "Users" SET active = 1 WHERE user_id = %s', (user_id,))
+        cursor.execute("UPDATE user_token SET expire = TRUE WHERE user_id = %s", (user_id,))
 
         # Commit the transaction
         conn.commit()
@@ -616,6 +674,8 @@ def activate_user(user_id):
         raise Exception("InternalServerError: Unable to activate user and expire token.")
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -630,20 +690,19 @@ def verify_user(user_id):
     conn = get_connection()
     try:
         # Verify the user
-        conn.execute(
-            "UPDATE Users SET verified = 1 WHERE user_id = ?",
-            (user_id,)
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE "Users" SET verified = TRUE WHERE user_id = %s',
+            (user_id,),
         )
         conn.commit()
 
         # Retrieve the updated user
-        row = conn.execute(
-            "SELECT * FROM Users WHERE user_id = ?",
-            (user_id,)
-        ).fetchone()
+        cursor.execute('SELECT * FROM "Users" WHERE user_id = %s', (user_id,))
+        row = cursor.fetchone()
 
         if row:
-            columns = [column[0] for column in row.cursor_description]  # get column names
+            columns = [desc.name for desc in cursor.description]
             return dict(zip(columns, row))
         return None
 
@@ -652,6 +711,8 @@ def verify_user(user_id):
         raise Exception("InternalServerError: Unable to verify user")
 
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         conn.close()
 
 
@@ -667,14 +728,17 @@ def get_user_tokens_by_user_id(user_id):
     conn = get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT * 
             FROM user_token
-            WHERE user_id = ?
-        """, (user_id,))
+            WHERE user_id = %s
+            """,
+            (user_id,),
+        )
 
         rows = cursor.fetchall()
-        columns = [column[0] for column in cursor.description]
+        columns = [column.name for column in cursor.description]
 
         return [dict(zip(columns, row)) for row in rows] if rows else []
 
@@ -717,11 +781,23 @@ def create_new(salt, user):
         cursor = conn.cursor()
         token = unique_security_token()
 
-        cursor.execute("""
-            INSERT INTO user_token (token, salt, expire, user_id)
-            OUTPUT INSERTED.*
-            VALUES (?, ?, 0, ?)
-        """, (token, salt, user['user_id']))
+        try:
+            cursor.execute(
+                """
+                INSERT INTO user_token (token, salt, expire, user_id)
+                VALUES (%s, %s, FALSE, %s)
+                RETURNING *
+                """,
+                (token, salt, user.get('user_id')),
+            )
+        except Exception as e:
+            print("Error inserting token:", e)
+            print("Values:", {
+                'token': token,
+                'salt': salt,
+                'user_id': user.get('user_id'),
+            })
+            raise
 
         # Fetch the inserted record
         inserted_row = cursor.fetchone()
@@ -729,7 +805,7 @@ def create_new(salt, user):
             raise Exception("Failed to create token.")
 
         # Optionally, you can return the full record as a dictionary:
-        columns = [col[0] for col in cursor.description]
+        columns = [col.name for col in cursor.description]
         inserted_record = dict(zip(columns, inserted_row))
 
         # Commit transaction
@@ -739,7 +815,8 @@ def create_new(salt, user):
         return inserted_record['token']
 
     except Exception as e:
-        raise Exception("An error occurred while creating the token.") from e
+        # Bubble up detailed error after logging above
+        raise Exception(f"An error occurred while creating the token: {e}") from e
 
     finally:
         if cursor:
@@ -807,7 +884,7 @@ def fetch_all_tokens():
         rows = cursor.fetchall()
 
         # Retrieve column names dynamically
-        columns = [column[0] for column in cursor.description]
+        columns = [column.name for column in cursor.description]
 
         # Convert rows to a list of dictionaries
         tokens = [dict(zip(columns, row)) for row in rows]
@@ -836,18 +913,22 @@ def is_token_exists(token: str):
         cursor = conn.cursor()
 
         # SQL query to check if the token exists
-        cursor.execute("""
-            SELECT TOP 1 *
+        cursor.execute(
+            """
+            SELECT *
             FROM user_token
-            WHERE token = ?
-        """, (token,))
+            WHERE token = %s
+            LIMIT 1
+            """,
+            (token,),
+        )
 
         # Fetch the first result
         row = cursor.fetchone()
 
         if row:
             # Retrieve column names dynamically
-            columns = [column[0] for column in cursor.description]
+            columns = [column.name for column in cursor.description]
 
             # Convert the row to a dictionary
             return dict(zip(columns, row))
@@ -881,11 +962,14 @@ def is_token_expired(token: str, expiry_minutes: int = 15):
     cursor = None
     try:
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT created_at, expire
             FROM user_token
-            WHERE token = ?
-        """, (token,))
+            WHERE token = %s
+            """,
+            (token,),
+        )
         row = cursor.fetchone()
 
         if not row:
@@ -938,11 +1022,11 @@ def get_users_and_profiles():
             user_profile.created_at AS profile_created_at,
             user_profile.updated_at AS profile_updated_at
         FROM 
-            Users
+            "Users"
         INNER JOIN 
             user_profile
         ON 
-            Users.user_id = user_profile.user_id;
+            "Users".user_id = user_profile.user_id;
     """
 
     conn = get_connection()
@@ -976,7 +1060,7 @@ def delete_user_and_profiles(user_id):
         bool: True if the operation is successful, False otherwise.
     """
     user_profile_query = "DELETE FROM user_profile WHERE user_id = ?"
-    users_query = "DELETE FROM Users WHERE user_id = ?"
+    users_query = 'DELETE FROM "Users" WHERE user_id = %s'
 
     conn = None
     cursor = None
@@ -1019,12 +1103,12 @@ def get_users_with_profiles_by_id(user_id):
             Users.*, 
             user_profile.*
         FROM 
-            Users
+            "Users"
         LEFT JOIN 
             user_profile
         ON 
-            Users.user_id = user_profile.user_id
-        WHERE Users.user_id = ?;
+            "Users".user_id = user_profile.user_id
+        WHERE "Users".user_id = %s;
     """
     conn = None
     cursor = None
@@ -1032,7 +1116,7 @@ def get_users_with_profiles_by_id(user_id):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute(query, [user_id])
+        cursor.execute(query, (user_id,))
         row = cursor.fetchone()
 
         if row:
@@ -1054,20 +1138,25 @@ def get_users_with_profiles_by_id(user_id):
 
 def print_all_tables():
     try:
-        conn = get_connection()  # SQLAlchemy Engine or Connection
-        # Execute raw SQL
-        result = conn.execute(text("""
-            SELECT table_schema, table_name
-            FROM information_schema.tables
-            WHERE table_type='BASE TABLE'
-              AND table_schema NOT IN ('pg_catalog', 'information_schema')
-            ORDER BY table_schema, table_name;
-        """))
-        
-        tables = result.fetchall()
+        # Use psycopg2 to list tables in Postgres
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT tablename
+            FROM pg_catalog.pg_tables
+            WHERE schemaname = 'public'
+            ORDER BY tablename;
+            """
+        )
+        tables = [r[0] for r in cursor.fetchall()]
         print("Tables in database:")
-        for schema, table in tables:
-            print(f"{schema}.{table}")
-
+        for t in tables:
+            print(f"  - {t}")
     except Exception as e:
         print(f"Error fetching tables: {e}")
+    finally:
+        try:
+            cursor.close(); conn.close()
+        except Exception:
+            pass

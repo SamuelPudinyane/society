@@ -20,7 +20,14 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-DATABASE_URI=(f"postgresql+psycopg://randrefinerydb_hdcz_user:NJY9sBdbbw3Sipd0gFGhHFjlLoiWnaaD@dpg-cudl8flumphs73cpbcj0-a:5432/randrefinerydb_hdcz?sslmode=disable")
+# Default to Postgres; override via env `DATABASE_URI`.
+# Example: postgresql+psycopg://user:password@host:5432/dbname
+DATABASE_URI = (
+    os.environ.get(
+        "DATABASE_URI",
+        "postgresql+psycopg://postgres:postgres@localhost:5432/newx"
+    )
+)
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -111,6 +118,13 @@ def config_extention(app):
     mail.init_app(app)
 
     config_login_manager(login_manager)
+
+    # Exempt analytics tracker from CSRF to allow frontend POSTs
+    try:
+        from .views import track_event
+        csrf.exempt(track_event)
+    except Exception:
+        pass
 
 
 def config_login_manager(manager):

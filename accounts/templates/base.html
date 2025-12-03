@@ -16,7 +16,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="icon" type="image/svg+xml" href="../static/images/dummy/UJlogo.jpg">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/dummy/UJlogo.jpg') }}">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
     <link
@@ -26,26 +26,26 @@
     <script src="https://unpkg.com/alpinejs" defer></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/css/index2.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index2.css') }}" />
      
   </head>
   <body>
     <div class="container-fluid nav_header">
       <div class="top-nav">
-        <a class="navbar-brand logo" href="{{url_for('accounts.index')}}">
-          <img class="logo"  src="../static/images/2new logo.png" alt="">
+        <a class="navbar-brand logo" href="{{ url_for('accounts.index') }}">
+          <img class="logo"  src="{{ url_for('static', filename='images/2new logo.png') }}" alt="">
         </a>
         <div class="nav-icons">
             <div class="location">
-                <img src="../static/images/Group 261.png" alt="Location Icon" width="30px">
+                <img src="{{ url_for('static', filename='images/Group 261.png') }}" alt="Location Icon" width="30px">
                 <span>66 Kingsway Ave, Auckland Park,<br> Johannesburg, 2092</span>
             </div>
             <div class="phone">
-                <img src="../static/images/Group 244.png" alt="Phone Icon" width="30px"><br>
+                <img src="{{ url_for('static', filename='images/Group 244.png') }}" alt="Phone Icon" width="30px"><br>
                 <span>(+27) 87 820 0840</span>
             </div>
             <div class="email">
-                <img src="../static/images/Group 257.png" alt="Email Icon" width="30px">
+                <img src="{{ url_for('static', filename='images/Group 257.png') }}" alt="Email Icon" width="30px">
                 <span>systemsadmin@jbs.ac.za</span>
             </div>
         </div>
@@ -94,25 +94,38 @@
                 <!-- <img src="./images/2new logo.png" alt="" width="110px" height="5px"> -->
             </div>
             <div class="centre_nav">
-                <a href="{{url_for('accounts.index')}}">Home</a>
-                <!-- <a href="./About.html">About Us</a> -->
-                <a href="./teachingnotes.html">Virtual Reality</a>
-                <a href="./resources.html">SMEs</a>
-                <a href="./contributors.html">Innovation</a>
-                <a href="./blog.html">Careers</a>
-                <a href="{{url_for('accounts.profile')}}">Update Profile</a>
+                <a href="{{ url_for('accounts.index') }}">Home</a>
+                <a href="{{ url_for('accounts.stem_app') }}">Virtual Reality</a>
+                <a href="{{ url_for('accounts.inventory') }}">SMEs</a>
+                <a href="{{ url_for('accounts.innovation') }}">Innovation</a>
+                <a href="#">Careers</a>
+                {% if session.get('user') %}
+                  <a href="{{ url_for('accounts.profile') }}">Update Profile</a>
+                {% endif %}
+                {%- set _user = session.get('user') or {} -%}
+                {%- set _role = _user.get('role') -%}
+                {%- set _current_role = (current_user.role|default(None, true)) -%}
+                {% if (_role and _role|lower == 'admin') or (_current_role and _current_role|lower == 'admin') %}
+                  <a href="{{ url_for('accounts.admin_analytics') }}">Admin Analytics</a>
+                {% endif %}
+                
                
             </div>
             
         </div>
-        <div class="write-button">
-            <!-- <button class="orange-button">Write with Us Now</button> -->
+        <div class="write-button navbar-icons">
             <div class="icons">
-                <a href="https://twitter.com" target="_blank" class="fab fa-twitter"></a>
-                <a href="https://instagram.com" target="_blank" class="fab fa-instagram"></a>
-                <a href="https://facebook.com" target="_blank" class="fab fa-facebook"></a>
-                <a href="https://wa.me" target="_blank" class="fab fa-whatsapp"></a>
-                
+                <a href="https://twitter.com" target="_blank" aria-label="Twitter" class="fab fa-twitter"></a>
+                <a href="https://instagram.com" target="_blank" aria-label="Instagram" class="fab fa-instagram"></a>
+                <a href="https://facebook.com" target="_blank" aria-label="Facebook" class="fab fa-facebook"></a>
+                <a href="https://wa.me" target="_blank" aria-label="WhatsApp" class="fab fa-whatsapp"></a>
+            </div>
+            <div class="auth-actions">
+              {% if session.get('user') %}
+                <a class="btn btn-sm btn-outline-light" href="{{ url_for('accounts.logout') }}" id="logout-btn">Logout</a>
+              {% else %}
+                <a class="btn btn-sm btn-outline-light" href="{{ url_for('accounts.login') }}" id="login-btn">Login</a>
+              {% endif %}
             </div>
         </div>
     </div>
@@ -129,4 +142,98 @@
   
 </script>
   </body>
+  <script>
+    // Lightweight analytics tracker
+    (function() {
+      const endpoint = '{{ url_for("accounts.track_event") }}';
+
+      function send(payload) {
+        try {
+          fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (e) { /* ignore */ }
+      }
+
+      // Time-on-page measurement (more accurate than load time)
+      let pageStart = performance.now();
+      let sentVisibility = false;
+      function sendTimeOnPage(reason) {
+        const duration = Math.round(performance.now() - pageStart);
+        if (duration <= 0) return;
+        send({ event_type: 'page_view', page_path: window.location.pathname, duration_ms: duration, area: reason || 'visibility' });
+      }
+      // Send when tab is hidden or page unloads
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden && !sentVisibility) { sentVisibility = true; sendTimeOnPage('hidden'); }
+      });
+      window.addEventListener('beforeunload', function() { sendTimeOnPage('unload'); });
+
+      // Clicks: capture element id or data-analytics
+      document.addEventListener('click', function(e) {
+        const el = e.target.closest('[id], [data-analytics]') || e.target;
+        const elementId = el.getAttribute('data-analytics') || el.id || null;
+        // Ignore non-meaningful clicks (e.g., container without id)
+        if (!elementId) return;
+        send({
+          event_type: 'click',
+          page_path: window.location.pathname,
+          element_id: elementId
+        });
+      }, true);
+
+      // Optional: press duration for clicks (mousedown -> mouseup)
+      document.addEventListener('mousedown', function(e) {
+        const el = e.target.closest('[id], [data-analytics]');
+        if (!el) return; el.__pressStart = performance.now();
+      }, true);
+      document.addEventListener('mouseup', function(e) {
+        const el = e.target.closest('[id], [data-analytics]');
+        if (!el || el.__pressStart == null) return;
+        const elementId = el.getAttribute('data-analytics') || el.id || null;
+        if (!elementId) return;
+        const duration = Math.round(performance.now() - el.__pressStart);
+        el.__pressStart = null;
+        send({ event_type: 'click', page_path: window.location.pathname, element_id: elementId, duration_ms: duration, area: 'press' });
+      }, true);
+    })();
+  </script>
 </html>
+  <script>
+  // Basic page view tracking
+  try {
+    const start = Date.now();
+    window.addEventListener('load', () => {
+      const duration = Date.now() - start;
+      fetch('/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_type: 'page_view',
+          page_path: window.location.pathname,
+          duration_ms: duration
+        })
+      }).catch(() => {});
+    });
+
+    // Click tracking
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[id]') || e.target;
+      const elementId = el && el.id ? el.id : null;
+      const area = el && el.getAttribute ? el.getAttribute('data-area') : null;
+      fetch('/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_type: 'click',
+          page_path: window.location.pathname,
+          element_id: elementId,
+          area: area
+        })
+      }).catch(() => {});
+    });
+  } catch (err) {}
+  // Active users display removed per request
+  </script>

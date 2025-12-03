@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container analytics-container py-4">
+  <h2 class="mb-3">Analytics Dashboard</h2>
+  <div class="row analytics-row g-4">
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Events Over Time (30 days)</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadObjectCSV((window.analyticsDataCache||{}).events_per_day||{}, ['date','events'], 'events_per_day.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('eventsPerDay')">PNG</button>
+            </div>
+          </div>
+          <canvas id="eventsPerDay"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Events by Type</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).events_by_type||[], ['type','count'], 'events_by_type.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('eventsByType')">PNG</button>
+            </div>
+          </div>
+          <canvas id="eventsByType"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Top Page Views</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).page_views||[], ['page','views'], 'page_views.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('pageViews')">PNG</button>
+            </div>
+          </div>
+          <canvas id="pageViews"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Clicks per Page</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).clicks_per_page||[], ['page','clicks'], 'clicks_per_page.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('clicksPerPage')">PNG</button>
+            </div>
+          </div>
+          <canvas id="clicksPerPage"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Top Elements Clicked</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).clicks_by_element||[], ['element','clicks'], 'clicks_by_element.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('clicksByElement')">PNG</button>
+            </div>
+          </div>
+          <canvas id="clicksByElement"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Activity Heatmap (Weekday x Hour)</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadHeatmapCSV()">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportHeatmapImage()">PNG</button>
+            </div>
+          </div>
+          <div id="heatmap" style="height: 380px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Browsers</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).browsers||[], ['browser','count'], 'browsers.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('browsers')">PNG</button>
+            </div>
+          </div>
+          <canvas id="browsers"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Avg View Duration (30 days)</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadObjectCSV((window.analyticsDataCache||{}).avg_duration_per_day||{}, ['date','avg_ms'], 'avg_duration_per_day.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('avgDurationPerDay')">PNG</button>
+            </div>
+          </div>
+          <canvas id="avgDurationPerDay"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Devices</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadPairsCSV((window.analyticsDataCache||{}).devices||[], ['device','count'], 'devices.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('devices')">PNG</button>
+            </div>
+          </div>
+          <canvas id="devices"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">New Users per Month</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadObjectCSV((window.analyticsDataCache||{}).users_per_month||{}, ['month','users'], 'users_per_month.csv')">CSV</button>
+              <button class="btn btn-outline-secondary" onclick="exportChartImage('usersPerMonth')">PNG</button>
+            </div>
+          </div>
+          <canvas id="usersPerMonth"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-8 analytics-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Currently Logged In Users (Map)</h5>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" onclick="downloadActiveIPsCSV()">CSV</button>
+            </div>
+          </div>
+          <div id="activeUsersMap" style="height: 420px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 text-muted">
+    Average view duration: {{ stats.avg_view_duration or 0 }} ms · Total events: {{ stats.total_events }}
+  </div>
+</div>
+
+<!-- Chart libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.34.0.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Export helpers and registries
+const chartRegistry = {};
+function saveBlob(content, filename, type='text/csv') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function toCSVFromPairs(pairs, headers){
+  const lines=[]; if(headers && headers.length) lines.push(headers.join(','));
+  for(const p of (pairs||[])){
+    const row=(Array.isArray(p)?p:[p[0],p[1]]).map(v=>{
+      const s=String(v??''); return s.includes(',')? '"'+s.replace(/"/g,'""')+'"': s;
+    }).join(',');
+    lines.push(row);
+  }
+  return lines.join('\n');
+}
+function toCSVFromObject(obj, headers){ return toCSVFromPairs(Object.entries(obj||{}), headers); }
+function downloadPairsCSV(pairs, headers, filename){ saveBlob(toCSVFromPairs(pairs, headers), filename); }
+function downloadObjectCSV(obj, headers, filename){ saveBlob(toCSVFromObject(obj, headers), filename); }
+function exportChartImage(canvasId){ const inst=chartRegistry[canvasId]; if(!inst) return; const url=inst.toBase64Image('image/png',1.0); const a=document.createElement('a'); a.href=url; a.download=`${canvasId}.png`; a.click(); }
+let heatmapState=null;
+function downloadHeatmapCSV(){ if(!heatmapState) return; const {z,x,y}=heatmapState; const lines=[['day/hour',...x].join(',')]; for(let i=0;i<y.length;i++){ lines.push([y[i],...z[i]].join(',')); } saveBlob(lines.join('\n'),'heatmap.csv'); }
+async function exportHeatmapImage(){ const el=document.getElementById('heatmap'); if(!el) return; const url=await Plotly.toImage(el,{format:'png',height:380,scale:2}); const a=document.createElement('a'); a.href=url; a.download='heatmap.png'; a.click(); }
+let activeGeoCache=[];
+function downloadActiveIPsCSV(){
+  const cache = (window.analyticsDataCache && window.analyticsDataCache.active_session_ips) ? window.analyticsDataCache.active_session_ips : [];
+  if(!activeGeoCache.length && cache.length){ const header='ip'; const rows=cache.map(ip=>ip); return saveBlob([header,...rows].join('\n'),'active_users_ips.csv'); }
+  const lines=['ip,city,region,latitude,longitude'];
+  for(const g of activeGeoCache){ const row=[g.ip,g.city||'',g.region||'',g.lat||'',g.lon||''].map(v=>String(v).replace(/,/g,' ')).join(','); lines.push(row);} saveBlob(lines.join('\n'),'active_users_geo.csv');
+}
+async function fetchData() {
+  const res = await fetch("{{ url_for('accounts.admin_analytics_data') }}");
+  if (!res.ok) throw new Error('Failed to load analytics data');
+  return await res.json();
+}
+
+function renderEventsPerDay(data) {
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+  const ctx = document.getElementById('eventsPerDay');
+  const inst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{ label: 'Events', data: values, borderColor: '#1086F4', backgroundColor: 'rgba(16,134,244,0.2)', tension: 0.2 }]
+    },
+    options: {
+      scales: {
+        x: {
+          ticks: { maxRotation: 0 },
+          title: { display: true, text: 'Date' }
+        },
+        y: {
+          title: { display: true, text: 'Events' }
+        }
+      }
+    }
+  });
+  chartRegistry['eventsPerDay'] = inst;
+}
+
+function renderPie(id, pairs, title) {
+  const labels = pairs.map(p => p[0]);
+  const values = pairs.map(p => p[1]);
+  const ctx = document.getElementById(id);
+  const inst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ label: title, data: values, backgroundColor: ['#1086F4','#D4AF37','#28a745','#dc3545','#6f42c1','#17a2b8','#ffc107'] }]
+    },
+    options: {
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+  chartRegistry[id] = inst;
+}
+
+function renderBar(id, pairs, title) {
+  const labels = pairs.map(p => p[0]);
+  const values = pairs.map(p => p[1]);
+  const ctx = document.getElementById(id);
+  const inst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: title, data: values, backgroundColor: '#D4AF37' }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          ticks: { callback: (v, i) => (labels[i] ? labels[i].slice(0, 20) : '') },
+          title: { display: true, text: title === 'Views' ? 'Page' : 'Element' }
+        },
+        y: {
+          title: { display: true, text: 'Count' }
+        }
+      }
+    }
+  });
+  chartRegistry[id] = inst;
+}
+
+function renderLinePairs(id, obj, title) {
+  const labels = Object.keys(obj);
+  const values = Object.values(obj);
+  const ctx = document.getElementById(id);
+  const inst = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: title, data: values, borderColor: '#28a745', backgroundColor: 'rgba(40,167,69,0.2)', tension: 0.2 }] },
+    options: {
+      scales: {
+        x: { title: { display: true, text: 'Date' } },
+        y: { title: { display: true, text: title } }
+      }
+    }
+  });
+  chartRegistry[id] = inst;
+}
+
+function renderUsersPerMonth(obj) {
+  const labels = Object.keys(obj);
+  const values = Object.values(obj);
+  const ctx = document.getElementById('usersPerMonth');
+  const inst = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'New Users', data: values, backgroundColor: '#1086F4' }] },
+    options: { scales: { x: { title: { display: true, text: 'Month' } }, y: { title: { display: true, text: 'Users' } } } }
+  });
+  chartRegistry['usersPerMonth'] = inst;
+}
+
+async function renderActiveUsersMap(ips) {
+  const mapEl = document.getElementById('activeUsersMap');
+  if (!mapEl) return;
+  const map = L.map('activeUsersMap').setView([0, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+  // Resolve IPs to coordinates via a public API (best-effort)
+  // Note: For production, use a server-side geolocation service with caching.
+  const markers = [];
+  for (const ip of ips || []) {
+    try {
+      const res = await fetch(`https://ipapi.co/${ip}/json/`);
+      if (!res.ok) continue;
+      const info = await res.json();
+      if (info && info.latitude && info.longitude) {
+        const m = L.marker([info.latitude, info.longitude]).addTo(map);
+        m.bindPopup(`${info.city || ''}, ${info.region || ''} (${ip})`);
+        markers.push(m);
+        activeGeoCache.push({ ip, city: info.city, region: info.region, lat: info.latitude, lon: info.longitude });
+      }
+    } catch (e) { /* ignore */ }
+  }
+  if (markers.length) {
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.2));
+  }
+}
+
+function renderHeatmap(triples) {
+  // Build 7x24 grid (dow 0..6, hour 0..23)
+  const z = Array.from({ length: 7 }, () => Array(24).fill(0));
+  for (const [dow, hr, count] of triples) {
+    if (dow>=0 && dow<7 && hr>=0 && hr<24) z[dow][hr] = count;
+  }
+  const data = [{
+    z,
+    x: Array.from({length:24}, (_,i)=> i),
+    y: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    type: 'heatmap',
+    colorscale: 'Blues'
+  }];
+  const layout = { margin: { t: 10, r: 10, b: 30, l: 50 } };
+  Plotly.newPlot('heatmap', data, layout, {displayModeBar:false});
+  heatmapState = { z, x: Array.from({length:24}, (_,i)=> i), y: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] };
+}
+
+(async () => {
+  try {
+    const data = await fetchData();
+    window.analyticsDataCache = data;
+    renderEventsPerDay(data.events_per_day || {});
+    renderPie('eventsByType', data.events_by_type || [], 'Events');
+    renderBar('pageViews', data.page_views || [], 'Views');
+    renderBar('clicksPerPage', data.clicks_per_page || [], 'Clicks');
+    renderBar('clicksByElement', data.clicks_by_element || [], 'Clicks');
+    renderHeatmap(data.heatmap || []);
+    renderPie('browsers', data.browsers || [], 'Browsers');
+    renderLinePairs('avgDurationPerDay', data.avg_duration_per_day || {}, 'Avg Duration (ms)');
+    renderPie('devices', data.devices || [], 'Devices');
+    renderUsersPerMonth(data.users_per_month || {});
+    renderActiveUsersMap(data.active_session_ips || []);
+  } catch (e) {
+    console.error(e);
+  }
+})();
+</script>
+{% endblock %}

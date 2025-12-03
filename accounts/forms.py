@@ -26,7 +26,8 @@ from accounts.validators import (
     Unique,
     StrongNames,
     StrongPhone,
-    StrongPassword
+    StrongPassword,
+    MinAgeYears
 )
 
 
@@ -44,7 +45,27 @@ class RegisterForm(FlaskForm):
         StrongNames()
     ])
     
-    date_of_birth = DateField('Date of Birth', format='%Y-%m-%d', validators=[DataRequired()])
+    # Limit selection to dates no later than today minus 5 years
+    _today = date.today()
+    try:
+        _max_dob = _today.replace(year=_today.year - 5)
+    except ValueError:
+        _max_dob = _today.replace(month=2, day=28, year=_today.year - 5)
+    # Optional: set a reasonable minimum (e.g., 120 years ago)
+    try:
+        _min_dob = _today.replace(year=_today.year - 120)
+    except ValueError:
+        _min_dob = _today.replace(month=2, day=28, year=_today.year - 120)
+
+    date_of_birth = DateField(
+        'Date of Birth',
+        format='%Y-%m-%d',
+        validators=[DataRequired(), MinAgeYears(5)],
+        render_kw={
+            'max': _max_dob.strftime('%Y-%m-%d'),
+            'min': _min_dob.strftime('%Y-%m-%d')
+        }
+    )
     
     
     email = EmailField('Email', validators=[

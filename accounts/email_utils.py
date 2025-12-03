@@ -12,13 +12,14 @@ from accounts.dbqueries import (generate_token,get_user_tokens_by_user_id,get_us
 from accounts.utils import get_full_url
 from flask import current_app as app
 
-def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text):
+def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text, html_body: t.Text = None):
     """
     Sends an email using the Flask-Mail extension.
 
     :param subject: The subject of the email.
     :param recipients: A list of recipient email addresses.
-    :param body: The body content of the email.
+    :param body: The plain text body content of the email.
+    :param html_body: The HTML body content of the email (optional).
 
     :raises ValueError: If the MAIL_USERNAME environment variable is not set.
     :raises ServiceUnavailable: If the SMTP service is unavailable.
@@ -31,14 +32,19 @@ def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text):
     # Create the message
     message = Message(subject=subject, sender=sender, recipients=recipients)
     message.body = body
+    
+    # Add HTML content if provided
+    if html_body:
+        message.html = html_body
 
-    print(message.body)  # Debugging line, optional
+    print("Sending email with subject:", subject)  # Debugging line
+    print("Recipients:", recipients)  # Debugging line
 
     try:
         # Flask-Mail handles connection automatically
         mail.connect()
         mail.send(message)
-        print("Email sent successfully!")  # Optional, for confirmation
+        print("✓ Email sent successfully!")
     except SMTPException as e:
         # Log the detailed exception for debugging purposes
         app.logger.error(f"SMTPException: {e}")
@@ -59,25 +65,52 @@ def send_mail(subject: t.AnyStr, recipients: t.List[str], body: t.Text):
         )
 
 def send_confirmation_mail(user):
-    print("this user is here  ",user)
-    subject: str = "Verify Your Account"
-    #user=get_user_tokens_by_user_id(user)
+    print("Sending confirmation mail to user:", user)
+    subject: str = "Verify Your Account - Society"
     
-    salt=app.config["ACCOUNT_CONFIRM_SALT"]
-    token: str = generate_token(salt,user)
-    user=get_user_by_id(user)
-    verification_link: str = get_full_url(
-        url_for("accounts.confirm_account", token=token)
-    )
-    
-    
-    context = render_template(
-        "emails/verify_account.txt",
-        fullname=str(user.get('firstname',''))+ " " + str(user.get('lastname','')),
-        verification_link=verification_link,
-    )
+    try:
+        # Get the salt from app config
+        salt = app.config["ACCOUNT_CONFIRM_SALT"]
+        print(f"Using salt: {salt}")
+        
+        # Generate token using the user object
+        token: str = generate_token(salt, user)
+        print(f"Generated token: {token}")
+        
+        # Create verification link
+        verification_link: str = get_full_url(
+            url_for("accounts.confirm_account", token=token)
+        )
+        print(f"Verification link: {verification_link}")
+        
+        # Use correct field names (first_name and last_name)
+        fullname = str(user.get('first_name', '')) + " " + str(user.get('last_name', ''))
+        print(f"Full name: {fullname}")
+        
+        # Render both text and HTML templates
+        text_body = render_template(
+            "emails/verify_account.txt",
+            fullname=fullname,
+            verification_link=verification_link,
+        )
+        
+        html_body = render_template(
+            "emails/verify_account.html",
+            fullname=fullname,
+            verification_link=verification_link,
+        )
+        
+        print(f"Sending email to: {user['email']}")
 
-    send_mail(subject=subject, recipients=[user['email']], body=context)
+        send_mail(subject=subject, recipients=[user['email']], body=text_body, html_body=html_body)
+        print("✓ Confirmation email sent successfully!")
+        
+    except Exception as e:
+        print(f"Error in send_confirmation_mail: {e}")
+        print(f"Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
+        raise
 
 
 def send_reset_password(user):

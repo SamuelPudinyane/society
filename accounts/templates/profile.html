@@ -5,20 +5,19 @@
 
 {% block body %}
 
-<div class="container my-4">
+<div class="container my-4 d-flex justify-content-center">
     
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-sm border-0" style="max-width: 900px; width: 100%;">
         {{ render_messages(dismissible=True, dismiss_animate=True) }}
-        <div class="row">
+        <div class="row align-items-start">
             <div class="col-md-5 col-lg-5">
                 <div class="d-flex flex-column align-items-center text-center p-3">
-                    {% if user.avator %}
+                    {% if user.avatar %}
                     <img class="rounded-circle mt-5 mb-3" style="object-fit: cover;width: 180px;height: 180px;"
-                        src="{{ url_for('static', filename='assets/profile/'+current_user.profile.avator) }}">
+                        src="{{ url_for('static', filename='assets/profile/' + user.avatar) }}" alt="Profile">
                     {% else %}
                     <img class="rounded-circle mt-5 mb-3" style="object-fit: cover;width: 180px;height: 180px;"
-                        src="../static/images/user.png">
-                        src="{{ url_for('static', filename='images/default_avator.jpg') }}">
+                        src="{{ url_for('static', filename='images/user.png') }}" alt="Default">
                     {% endif %}
                     <h4 class="font-weight-bold">{{ user.first_name }} {{ user.last_name }}</h4>
                     <p class="text-black-50">{{ user.email }}</p>
@@ -58,7 +57,9 @@
                             {{ render_field(form.submit, class="w-100") }}
                         </div>
                         <script>
-                            document.getElementById("bio").value = '{{ user.bio }}';
+                            // Ensure bio is set if not applied via value attr
+                            var bioEl = document.getElementById("bio");
+                            if (bioEl && !bioEl.value) { bioEl.value = '{{ (user.bio or user.profile_bio) | default("") }}'; }
                         </script>
                     </form>
                 </div>

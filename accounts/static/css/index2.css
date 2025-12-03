@@ -1,11 +1,494 @@
-body {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+/* --- Analytics centering overrides --- */
+.analytics-container { text-align: center; }
+.analytics-row {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px; /* add more spacing between cards */
+  width: 100%;
+  margin: 0 auto;
+}
+.analytics-card { margin: 4px; }
+
+/* Professional card polish */
+.analytics-card .card {
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+.analytics-card .card-title {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.analytics-card .card-body {
+  padding: 16px 16px 8px 16px;
+}
+.analytics-card {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 320px;
+  max-width: 420px;
+  width: 100%;
+  margin: 8px 0;
+}
+@media (min-width: 768px) {
+  .analytics-card { flex: 0 1 360px; }
+}
+@media (min-width: 992px) {
+  .analytics-card { flex: 0 1 380px; }
+}
+/* Analytics layout alignment */
+.analytics-container { width: 100%; padding-left: 12px; padding-right: 12px; }
+.analytics-row { display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; }
+.analytics-card .card { height: 100%; }
+.analytics-card .card-body { display: flex; flex-direction: column; gap: 8px; }
+.analytics-card canvas { width: 100% !important; }
+#heatmap { width: 100% !important; }
+
+@media (max-width: 767.98px) {
+  .analytics-container { padding-left: 8px; padding-right: 8px; }
+  .analytics-row { gap: 12px; justify-content: center; }
+  .analytics-card { display: flex; }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .analytics-row { gap: 16px; justify-content: center; }
+  .analytics-card { flex: 0 0 48%; max-width: 48%; }
+}
+
+@media (min-width: 1200px) {
+  .analytics-row { gap: 20px; justify-content: center; }
+  .analytics-card { flex: 0 0 32%; max-width: 32%; }
+}
+
+/* Ensure analytics fills page width and avoids container constraints */
+.analytics-container {
+  max-width: none !important;
+  width: 100% !important;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+/* Layout reset to remove unexpected white gaps */
+html, body {
+  margin: 0;
+  padding: 0 !important; /* enforce zero body padding */
+  text-align: initial; /* do not force center alignment */
+}
+
+/* Do not override section background or text colors; respect template defaults */
+.services_section, .navi_section, .apps, .lastsection, .conclude { background: inherit; color: inherit; }
+.navi_section, .apps {
+  width: 100%;
+  clear: both; /* ensure stacked vertically */
+  display: block;
+}
+
+/* Prevent side-by-side stacking of major sections */
+.services_section + .navi_section,
+.navi_section + .apps,
+section + section {
+  margin-top: 12px; /* smaller space between stacked sections */
+}
+/* Tight stacking: remove top gaps between consecutive blocks */
+section,
+.holder,
+.custom-container,
+.apps,
+.services_section,
+.footer,
+.analytics-container,
+.analytics-row,
+.analytics-card {
+  margin-top: 0 !important;
+}
+
+/* Collapse margins between consecutive siblings to visually connect sections */
+section + section,
+.holder + .holder,
+.custom-container + .custom-container,
+.apps + .apps,
+.services_section + .services_section,
+.footer + .footer,
+.analytics-row > * + * {
+  margin-top: 0 !important;
+}
+
+/* Ensure first child in a stacked container doesn't introduce top margin */
+section > *:first-child,
+.holder > *:first-child,
+.custom-container > *:first-child,
+.apps > *:first-child,
+.services_section > *:first-child,
+.footer > *:first-child,
+.analytics-row > *:first-child,
+.analytics-card > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* Remove default top margins from common elements that often create gaps */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+canvas,
+.row,
+[class*="col-"] {
+  margin-top: 0 !important;
+}
+
+/* When using flex stacks, prefer gap control over margins */
+.stack-tight,
+.analytics-row,
+.footer {
+  gap: 0 !important;
+
+
+/* Ensure inner containers below Applications and Services use flex for alignment */
+.apps .container {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center; /* center boxes across the row */
+  align-items: stretch;    /* equal height alignment */
+  width: 100% !important;
+}
+
+.apps .container > * {
+  flex: 1 1 300px; /* responsive flex-basis for boxes */
+  margin: 0;       /* no extra outer margins */
+}
+
+.navi_section .service_container {
+  display: flex !important;
+  flex-direction: column; /* stack heading + features */
+  gap: 0;                 /* remove gaps; controlled by child styles */
+  width: 100% !important;
+}
+
+.navi_section .features-wrapper {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 12px; /* small internal spacing between feature items */
+  width: 100%;
+}
+
+.navi_section .features-wrapper .feature-item {
+  flex: 1 1 240px;
+}
+
+/* Fix misplaced logos: header and footer alignment & sizing */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-nav .logo img,
+.navbar-brand.logo img {
+  display: block;
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  margin: 0;
+}
+
+.bottom-nav .logo img {
+  display: block;
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  margin: 0;
+}
+
+.footer .column:first-child img {
+  display: block;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  margin: 0;
+}
+
+/* Align logo inline with address, phone, email in top nav */
+.top-nav .nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.top-nav .nav-icons .location,
+.top-nav .nav-icons .phone,
+.top-nav .nav-icons .email {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-nav .nav-icons img {
+  display: block;
+  height: 24px;
+  width: auto;
+}
+
+.top-nav .nav-icons span {
+  line-height: 1.2;
+  display: block;
+  white-space: nowrap; /* keep inline on larger screens */
+}
+
+/* Avoid unintended wrapping that misaligns items */
+@media (max-width: 768px) {
+  .top-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
+  .top-nav .nav-icons {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .top-nav .nav-icons span {
+    white-space: normal; /* allow wrapping on small screens */
+  }
+}
+
+/* Remove forced line break in address for inline layout on desktop */
+.top-nav .nav-icons .location span br { display: none; }
+@media (max-width: 768px) {
+  .top-nav .nav-icons .location span br { display: inline; }
+}
+
+.holder {
+  width: 100%;
+  margin: 0 auto;
+  /* allow natural content height */
+}
+.services_section .holder,
+.navi_section .holder {
+  max-width: 1200px;
+  width: 100%;
+  height: auto; /* let content define height */
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Make services section truly full-width by removing inner max-width */
+.services_section .holder {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Ensure hero holder doesn't exceed viewport unexpectedly */
+.services_section .holder .mySwiper,
+.services_section .holder .swiper-wrapper {
+  max-height: 70vh;
+}
+
+/* Navigation link color on dark background */
+.centre_nav a { color: #ffffff; }
+
+/* Cards/features alignment */
+.features-wrapper {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.feature-item { flex: 1 1 300px; }
+
+/* Inline row for STEM, Innovation, SMMEs, Agri on desktop */
+@media (min-width: 992px) {
+  .features-wrapper {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .features-wrapper .feature-item {
+    flex: 0 0 24%;
+  }
+}
+
+/* Swiper sizing to avoid huge vertical whitespace */
+.mySwiper { height: 55vh; }
+.swiper-wrapper { height: 55vh; }
+.swiper-slide { background-position: center; }
+/* Ensure active slide spans full width */
+.swiper-slide { width: 100% !important; margin-right: 0 !important; }
+
+/* Section titles spacing */
+.title { margin: 0; color: #ffd466; text-align: center; }
+.title3 { margin: 0; color: #ffffff; text-align: center; }
+
+/* Footer adjustments */
+.footer { 
+  display: flex; 
+  flex-wrap: wrap; 
+  justify-content: space-between; /* spread columns side-by-side */
+  align-items: flex-start;        /* align headings at top */
+  gap: 24px; 
+}
+.footer .column { 
+  flex: 1 1 300px;               /* ensure each column takes equal space */
+  min-width: 280px;              /* keep readable width before wrapping */
+  max-width: 420px; 
+}
+
+/* Responsive footer media queries */
+@media (max-width: 767.98px) {
+  .footer {
+    flex-direction: column;       /* stack columns vertically on small screens */
+    gap: 16px;                    /* slightly smaller gap */
+    align-items: stretch;         /* full width columns */
+  }
+  .footer .column {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .footer .column h4 { font-size: 1rem; }
+  .footer .column ul { padding-left: 0; }
+  .footer .column ul li { list-style: none; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .footer {
+    flex-wrap: wrap;              /* two-per-row if needed */
+    gap: 20px;
+  }
+  .footer .column { flex: 1 1 45%; }
+}
+
+@media (min-width: 992px) {
+  .footer {
+    flex-wrap: nowrap;            /* single row on desktop */
+    gap: 24px;
+  }
+  .footer .column { flex: 1 1 0; }
+}
+
+/* Prevent unintended wide body background showing between sections */
+section { display: block; }
+section { display: block; width: 100%; }
+/* Ensure direct child divs span full width */
+section > div { width: 100%; }
+/* Also ensure common layout wrappers are full-width inside sections */
+section > .holder,
+section > .container,
+section > .row { width: 100%; }
+/* Zero out default section spacing */
+section { margin: 0; padding: 0; }
+
+/* Override Bootstrap container constraints to eliminate right-side white space */
+.container {
+  max-width: none !important;
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure Apps section containers are truly full-bleed */
+.apps .container {
+  max-width: none !important;
+}
+
+/* Make Services holder full-bleed consistently */
+.navi_section .holder {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Applications section: inline/flex layout of cards */
+.apps .container { 
+  display: flex !important; 
+  flex-wrap: wrap; 
+  gap: 16px; 
+  width: 100%; 
+  margin: 0;                 /* no side margins */
+  justify-content: center; 
+}
+
+/* Restore previous Apps background style */
+.apps {
+  background-color: #080a29; /* old dark background */
+  color: #ffffff;
+}
+.apps .container .box,
+.apps .container .box1,
+.apps .container .box2,
+.apps .container .box3,
+.apps .container .box4 {
+  width: 270px; /* card width */
+  margin: 0; 
+}
+
+/* Ensure containers inside Apps are flex-aligned */
+.apps .container .box,
+.apps .container .box1,
+.apps .container .box2,
+.apps .container .box3,
+.apps .container .box4 {
+  display: flex !important;
+  flex-direction: column !important; /* vertical stack inside each card */
+  align-items: stretch !important;
+}
+
+/* Stronger selector: any direct child inside Apps container is flex */
+.apps .container > div {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.apps .container .box .content {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important; /* distribute heading, text, button */
+  height: 100% !important;
+}
+
+/* Desktop: force single inline row of four cards */
+@media (min-width: 992px) {
+  .apps .container {
+    flex-wrap: nowrap;               /* keep items in one line */
+    justify-content: space-between;  /* spread evenly */
+    align-items: stretch;            /* equal heights across row */
+  }
+  /* Ensure every child aligns as a column of equal width */
+  .apps .container > div {
+    width: calc(25% - 12px);        /* four columns with gap */
+    flex: 0 0 calc(25% - 12px);
+    box-sizing: border-box;
+  }
+}
+
+/* Keep equal heights for card content */
+.apps .container > div { display: flex; }
+.apps .container > div .content { flex: 1 1 auto; }
+
+@media (min-width: 992px) {
+  .apps .container {
+    justify-content: space-between;
+  }
+  .apps .container .box,
+  .apps .container .box1,
+  .apps .container .box2,
+  .apps .container .box3,
+  .apps .container .box4 {
+    width: calc(25% - 12px); /* four inline cards with gap */
+  }
+}
+/* Do not override global font; inherit from base */
+body { font-family: inherit; }
   
   .video-background {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 60vh; /* smaller hero height */
     overflow: hidden;
   }
   .profile {
@@ -67,13 +550,23 @@ body {
   
   .content1 {
     position: absolute;
-    top: 50%;
-    left: 30%;
-    transform: translate(-30%, -70%);
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     color: white;
-    /* Choose color that stands out over your video */
     z-index: 100;
+    width: 100%;
+  }
+
+  /* Constrain and center the hero text block */
+  .custom-container {
+    height: 120px;               /* fixed, tidy height for heading block */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
   }
   
   .content h1 {
@@ -109,16 +602,19 @@ body {
   
   .top-nav {
     background-color: white;
-    padding: 10px;
+    padding: 10px 16px;          /* slightly more padding to fit items */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 15vh;
+    height: auto;                /* let content dictate height */
+    min-height: 64px;            /* ensure enough height for icons/text */
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 12px;
     border-radius: 0px 0px 5px 0px;
     /* background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(0, 0, 0, 0.7)), url(./r Story\ Video\ in\ Violet\ Cyan\ Gradient\ Tech\ Style\ \(1\).gif) */
-  
+    position: relative;          /* create stacking context */
+    z-index: 1000;               /* above hero/video background */
+  }
   }
   
   .nav_sec {
@@ -163,58 +659,36 @@ body {
     height: 100%;
   }
   
+  .navbar-icons { display: flex; align-items: center; gap: 16px; }
   .icons {
-    display: flex;
-    gap: 20px;
-    margin-right: 80px;
-    margin-top: 10px;
-  }
+      display: flex;
+      gap: 12px;
+      margin: 0;
+      color: #ffffff;
+    }
   
   .write-button {
-    padding-left: 10px;
-    background-color: #D4AF37;
-    background-color: #D4AF37;
-    height: 39px;
-    width: 150px;
-    /* Adjust the width as needed */
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    display: inline-block;
-    border: none;
-    color: white;
-    top: 83px;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: center;
-    line-height: 40px;
-    /* Center the text vertically */
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
-    /* Add grey shadow all around */
-  }
+      padding: 4px 8px;
+      height: auto;
+      width: auto;
+      position: static; /* keep inside navbar flow */
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: none;
+      color: #ffffff;
+      font-size: 14px;
+    }
   
-  .write-button::after {
-    content: '';
-    position: absolute;
-    left: -20px;
-    /* Adjust as needed */
-    top: 0;
-    width: 0;
-    height: 0;
-    border-right: 20px solid #D4AF37;
-    /* Same color as button */
-    border-top: 20px solid transparent;
-    border-bottom: 20px solid transparent;
-  }
+  .write-button::after { display: none; }
   
   .icons a {
-    color: #000;
-    text-decoration: none;
-  }
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 18px;
+    }
   
-  .icons a:hover {
-    color: #007bff;
-  }
+  .icons a:hover { color: #ffd466; }
   
   
   
@@ -287,17 +761,20 @@ body {
   
   
   .bottom-nav {
-  
     background-color: rgb(2, 27, 43);
-  
-  
-    padding: 7px;
-    height: 5.6vh;
+    padding: 8px 14px;           /* a touch more padding */
+    height: auto;                /* let content dictate height */
+    min-height: 44px;            /* ensure enough height */
+    position: relative;          /* ensure nav stays above sections */
+    z-index: 900;
   }
   
   .bottom-nav2 {
-    padding: 7px;
-    height: 5.6vh;
+    padding: 8px 14px;           /* a touch more padding */
+    height: auto;                /* let content dictate height */
+    min-height: 44px;            /* ensure enough height */
+    position: relative;
+    z-index: 900;
   }
   
   .bottom-nav2 .centre_nav {
@@ -305,7 +782,7 @@ body {
   }
   
   .bottom-nav .centre_nav {
-    padding-left: 330px;
+    padding-left: 0;
   }
   
   .bottom-nav .nav-links {
@@ -395,9 +872,8 @@ body {
     font-family: Georgia, 'Times New Roman', Times, serif;
   }
   
-  .bottom-nav .centre_nav {
-    display: flex;
-    justify-content: center;
+  .bottom-nav2 .centre_nav {
+    padding-left: 0;
     align-items: center;
   }
   
@@ -405,7 +881,7 @@ body {
     position: relative;
     color: #f8f8f8;
     text-decoration: none;
-    margin-left: 20px;
+    margin-left: 14px;           /* reduce link spacing */
     transition: background-color 0.3s, padding 0.3s;
     /* Smooth transition for background color and padding */
   }
@@ -414,7 +890,7 @@ body {
     position: relative;
     color: #0c0a27;
     text-decoration: none;
-    margin-left: 20px;
+    margin-left: 14px;           /* reduce link spacing */
     transition: background-color 0.3s, padding 0.3s;
     /* Smooth transition for background color and padding */
   }
@@ -484,16 +960,16 @@ body {
   
   .navi_section {
     width: 100%;
-    height: 66vh;
-    /* margin-top: 30vh; */
+    min-height: 0;
+    height: auto; /* let content dictate height */
     background-color: #080a29;
     color: rgb(0, 255, 94);
   }
   
   .services_section {
     width: 100%;
-    height: 112vh;
-    /* margin-top: 75vh; */
+    min-height: 0;
+    height: auto; /* let content dictate height */
     background-color: rgb(241, 239, 235);
     color: black;
   }
@@ -506,7 +982,7 @@ body {
     width: 100%;
     height: 120vh;
     margin-top: 27vh;
-    background-image: url(./images/n\ final.jpg );
+    background-image: url(/static/images/n\ final.jpg );
     background-repeat: no-repeat;
     background-size: cover;
     background-color: #f8fcfc;
@@ -599,10 +1075,10 @@ body {
   .service_container {
     display: flex;
     justify-content: center;
-    /* Center items horizontally */
+    align-items: center;
     margin-top: 1vh;
-    width: 80%;
-    padding-left: 205px;
+    width: 100%;
+    padding-left: 0;
   }
   
   .outer-box {
@@ -658,13 +1134,17 @@ body {
     font-weight: bold;
   }
   
+  /* Ensure features are flex; override any block fallback */
+  .navi_section .features-wrapper,
   .features-wrapper {
-    display: flex;
-    justify-content: center;
-    /* margin-top: 5px; */
-    margin-right: 120px;
-    width: 100%;
-  }
+      display: flex !important;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      gap: 12px;
+      margin-right: 0;
+      width: 100%;
+    }
   
   .feature-item h4 {
     color: white;
@@ -675,7 +1155,8 @@ body {
   }
   
   .feature-item {
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     height: 150px;
     margin: 0px;
     /* position: relative; */
@@ -722,7 +1203,7 @@ body {
     top: -58px;
     left: 50%;
     transform: translateX(-50%);
-    background-image: url("./images/Ellipse\ 9.png");
+    background-image: url("/static/images/Ellipse\ 9.png");
     background-size: cover;
   }
   
@@ -734,7 +1215,7 @@ body {
     position: absolute;
     top: -100px;
     left: 50%;
-    background-image: url("./images/Ellipse\ 7.png");
+    background-image: url("/static/images/Ellipse\ 7.png");
     background-size: cover;
     transform: translateX(-50%);
   }
@@ -747,7 +1228,7 @@ body {
     position: absolute;
     top: -100px;
     left: 50%;
-    background-image: url("./images/Ellipse\ 8.png");
+    background-image: url("/static/images/Ellipse\ 8.png");
     background-size: cover;
     transform: translateX(-50%);
   }
@@ -761,7 +1242,7 @@ body {
     top: -100px;
     text-justify: auto;
     left: 50%;
-    background-image: url("./images/Ellipse\ 10.png");
+    background-image: url("/static/images/Ellipse\ 10.png");
     background-size: cover;
     transform: translateX(-50%);
   }
@@ -844,7 +1325,7 @@ body {
     background-color: linear-gradient(rgba(6, 0, 8, 0.7), rgba(7, 8, 14, 0.7));
     box-shadow: 0 0 5px 5px rgba(122, 54, 2, 0.3);
     /* Increase the blur radius for a larger shadow */
-    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(7, 8, 14, 0.7)), url(./images/1.png);
+    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(7, 8, 14, 0.7)), url(/static/images/1.png);
   }
   
   .services {
@@ -874,11 +1355,17 @@ body {
   }
   
   .row {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    display: block;
     width: 100%;
   }
+
+/* Responsive reflow at tablet and above */
+@media (min-width: 768px) {
+  .features-wrapper { display: flex; justify-content: center; flex-wrap: wrap; }
+  .feature-item { flex: 1 1 300px; }
+  .footer { display: flex; flex-wrap: wrap; justify-content: center; }
+  .column { flex: 1 1 240px; }
+}
   .centre_nav .login{
     float: right;
     margin-right: 200px;
@@ -898,7 +1385,7 @@ body {
     overflow: hidden;
     background-size: cover;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(60, 61, 65, 0.7)), url(./images/love.jpg);
+    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(60, 61, 65, 0.7)), url(/static/images/love.jpg);
     transition: transform 0.3s ease-in-out;
     /* Add transition for smooth effect */
   
@@ -966,7 +1453,7 @@ body {
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-size: cover;
-    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(60, 61, 65, 0.7)), url(./images/rural_animation.gif);
+    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(60, 61, 65, 0.7)), url(/static/images/rural_animation.gif);
     transition: transform 0.3s ease-in-out;
     /* Add transition for smooth effect */
   
@@ -976,20 +1463,47 @@ body {
   
   
   .apps {
-    padding-top: 20vh;
+    padding-top: 24px; /* modest spacing above Applications */
+    clear: both;
   }
   
   .container {
-    display: flex;
-    margin-left: 24vh;
+        display: block; /* block layout for sections */
+        margin-left: 0;
+        margin-right: 0;
+        margin: 0 auto; /* center within parent */
+        width: 100%;
+        padding: 0 !important; /* no internal padding */
+    max-width: none !important; /* remove Bootstrap's max-width constraints */
+        text-align: center; /* center inline children */
+      }
+
+  /* Apps section: force container to be flex regardless of global container rule */
+  .apps > .container {
+    display: flex !important;
+    flex-wrap: wrap;
     justify-content: center;
-    width: 80%;
-    /* 3 boxes of 280px + 20px padding */
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  /* Remove Bootstrap row gutters so content reaches screen edges */
+  .row { margin-left: 0 !important; margin-right: 0 !important; }
+  [class^="col-"], [class*=" col-"] { padding-left: 0 !important; padding-right: 0 !important; }
+
+  /* If any container becomes flex, center its children */
+  .container.d-flex,
+  .container.flex,
+  .container[style*="display:flex"],
+  .container[style*="display: flex"] {
+    justify-content: center;
+    align-items: center;
   }
   
   .box {
     width: 270px;
-    height: 290px;
+    min-height: 220px;            /* smaller card height */
+    height: auto;                  /* allow content to grow */
     /* border: 1px solid #000; */
     /* box-sizing: border-box; */
     padding: 0px;
@@ -1005,7 +1519,8 @@ body {
   
   .box1 {
     width: 270px;
-    height: 290px;
+    min-height: 220px;
+    height: auto;
     /* border: 1px solid #000;
     box-sizing: border-box; */
     padding: 0px;
@@ -1013,7 +1528,7 @@ body {
     margin: 0px;
     display: flex;
     flex-direction: column;
-    background-image: url(./images/love5.jpg);
+    background-image: url(/static/images/love5.jpg);
     background-size: cover;
     justify-content: center;
     align-items: center;
@@ -1021,7 +1536,8 @@ body {
   
   .box2 {
     width: 270px;
-    height: 290px;
+    min-height: 220px;
+    height: auto;
     /* border: 1px solid #000;
     box-sizing: border-box; */
     padding: 0px;
@@ -1030,7 +1546,7 @@ body {
     display: flex;
     flex-direction: column;
     background-size: cover;
-    background-image: url(./images/innovatio1.jpg);
+    background-image: url(/static/images/innovatio1.jpg);
   
     justify-content: center;
     align-items: center;
@@ -1038,7 +1554,8 @@ body {
   
   .box3 {
     width: 270px;
-    height: 290px;
+    min-height: 220px;
+    height: auto;
     /* border: 1px solid #000;
     box-sizing: border-box; */
     padding: 0px;
@@ -1046,7 +1563,7 @@ body {
     margin: 0px;
     display: flex;
     flex-direction: column;
-    background-image: url(./images/saln.jpg);
+    background-image: url(/static/images/saln.jpg);
     background-size: cover;
     justify-content: center;
     align-items: center;
@@ -1054,7 +1571,8 @@ body {
   
   .box4 {
     width: 270px;
-    height: 290px;
+    min-height: 220px;
+    height: auto;
     /* border: 1px solid #000;
     box-sizing: border-box; */
     padding: 0px;
@@ -1062,7 +1580,7 @@ body {
     margin: 0px;
     display: flex;
     flex-direction: column;
-    background-image: url(./images/streetv.jpg);
+    background-image: url(/static/images/streetv.jpg);
     background-size: contain;
     justify-content: center;
     background-size: cover;
@@ -1078,9 +1596,9 @@ body {
     border-right: 0px solid transparent;
     border-top: 40px solid #091d30;
     position: absolute;
-    bottom: 550;
-    padding-top: 250.5px;
-    margin-left: 60.9px;
+    bottom: 0;                     /* align to card bottom */
+    padding-top: 0;
+    margin-left: 0;
   }
   
   .content {
@@ -1110,28 +1628,25 @@ body {
   .conclude {
     background-color: #7A7A7A;
     width: 100%;
-    height: 50vh;
+    height: auto;
     margin-top: 0px;
     position: relative;
-    /* Set position to relative */
-    display: flex;
+    display: block;
   }
   
   
   .deco_container {
-    background-color: #c7bbbb;
-    width: 100%;
-    height: 60vh;
-    border: #007bff;
     background-color: #7A7A7A;
-    position: absolute;
-    /* Set position to absolute */
-    top: 10px;
-    /* Set top distance from the top of .conclude */
-    display: flex;
-    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(0, 0, 0, 0.7)), url(./images/Home\ \(1\).png);
+    width: 100%;
+    min-height: 30vh;              /* smaller baseline height */
+    border: 1px solid #007bff;     /* specify width and style for valid border */
+    position: relative;            /* avoid absolute clipping */
+    top: 0;
+    display: block;
+    background-image: linear-gradient(rgba(6, 0, 8, 0.7), rgba(0, 0, 0, 0.7)), url("/static/images/Home (1).png");
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;   /* ensure image centers correctly */
   }
   
   .lastsection .tittle3 {
@@ -1147,11 +1662,7 @@ body {
   }
   
   .footer {
-    display: flex;
-    flex-wrap: wrap;
-    /* Allow flex items to wrap */
-    justify-content: center;
-    /* Center align flex items */
+    /* keep flex from earlier definition; don't override display */
     padding: 20px;
     color: #ddd;
   }
@@ -1161,11 +1672,10 @@ body {
   }
   
   .column {
-    flex: 1;
-    padding: 0 65px;
+    /* column sizing controlled by responsive flex rules above */
+    padding: 0 16px;
     margin-bottom: 20px;
-    /* Add margin between columns */
-    justify-content: center;
+    justify-content: flex-start;
   }
   
   .column h4 {

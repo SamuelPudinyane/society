@@ -9,9 +9,9 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
-# --- TABLE: Society_Users ---
+# --- TABLE: Users ---
 class Society_Users(Base):
-    __tablename__ = "Society_Users"
+    __tablename__ = "Users"
 
     user_id = Column(NVARCHAR(255), primary_key=True, nullable=False)
     first_name = Column(NVARCHAR(25), nullable=False)
@@ -39,7 +39,7 @@ class Society_UserProfile(Base):
     __tablename__ = "Society_user_profile"
 
     id = Column(NVARCHAR(36), primary_key=True, nullable=False)
-    user_id = Column(NVARCHAR(255), ForeignKey("Society_Users.user_id"), nullable=False)
+    user_id = Column(NVARCHAR(255), ForeignKey("Users.user_id"), nullable=False)
     bio = Column(Text, nullable=True)
     avatar = Column(NVARCHAR(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -55,7 +55,7 @@ class Society_UserToken(Base):
     token = Column(VARCHAR(72), primary_key=True, nullable=False, unique=True)
     salt = Column(VARCHAR(20), nullable=True)
     expire = Column(Boolean, default=False, nullable=False)
-    user_id = Column(NVARCHAR(255), ForeignKey("Society_Users.user_id"), nullable=False)
+    user_id = Column(NVARCHAR(255), ForeignKey("Users.user_id"), nullable=False)
 
     user = relationship("Society_Users", back_populates="tokens")
 
@@ -67,6 +67,6 @@ class Society_Copies(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_copy = Column(Text, nullable=True)
     certificate = Column(Text, nullable=True)
-    user_id = Column(NVARCHAR(255), ForeignKey("Society_Users.user_id"), nullable=False)
+    user_id = Column(NVARCHAR(255), ForeignKey("Users.user_id"), nullable=False)
 
     user = relationship("Society_Users", back_populates="copies")
