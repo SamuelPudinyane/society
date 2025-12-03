@@ -1,7 +1,7 @@
 import json
 import os
 import psycopg
-from psycopg2 import errors as pg_errors
+from psycopg import errors as pg_errors
 from accounts import db
 from sqlalchemy import text
 from dotenv import load_dotenv
