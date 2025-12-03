@@ -57,7 +57,8 @@ class BaseConfig:
 
 class Development(BaseConfig):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")
+    # SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")  # Old connection string (commented out)
+    SQLALCHEMY_DATABASE_URI = "postgresql://society_master_user:eCGrmS9dFFk9NDFVr814wKEjERVhEdcc@dpg-d4oa7si4d50c738nikr0-a.oregon-postgres.render.com/society_master"
 
 
 class Production(BaseConfig):
