@@ -17,7 +17,7 @@ class BaseConfig:
     DEBUG = False
     TESTING = False
 
-    SITE_URL = os.getenv("SITE_DOMAIN", "http://localhost:5000")
+    SITE_URL = os.getenv("SITE_DOMAIN", "https://society-ed02.onrender.com/")
 
     # Site secret key or bootstrap UI theme.
     SECRET_KEY = os.getenv("SECRET_KEY", "my-sekret-key")
@@ -58,7 +58,8 @@ class BaseConfig:
 class Development(BaseConfig):
     DEBUG = True
     # SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///db.sqlite3")  # Old connection string (commented out)
-    SQLALCHEMY_DATABASE_URI = "postgresql://society_master_user:eCGrmS9dFFk9NDFVr814wKEjERVhEdcc@dpg-d4oa7si4d50c738nikr0-a.oregon-postgres.render.com/society_master"
+    SQLALCHEMY_DATABASE_URI = "postgresql://society_master_user:eCGrmS9dFFk9NDFVr814wKEjERVhEdcc@dpg-d4oa7si4d50c738nikr0-a.oregon-postgres.render.com/society_master"  # Use env var instead
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
 
 
 class Production(BaseConfig):

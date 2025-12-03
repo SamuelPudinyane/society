@@ -13,11 +13,11 @@ from accounts.utils import unique_security_token
 load_dotenv()
 # Postgres connection details are read from env
 # PG_HOST, PG_PORT, PG_DB, PG_USER, PG_PASSWORD or DATABASE_URI
-PG_HOST = os.getenv("PG_HOST", "localhost")
-PG_PORT = os.getenv("PG_PORT", "5432")
-PG_DB = os.getenv("PG_DB", "society_master")
-PG_USER = os.getenv("PG_USER", "postgres")
-PG_PASSWORD = os.getenv("PG_PASSWORD", "malvapudding78*")
+PG_HOST = os.getenv("PG_HOST","dpg-d4oa7si4d50c738nikr0-a.oregon-postgres.render.com")
+PG_PORT = os.getenv("PG_PORT","5432")
+PG_DB = os.getenv("PG_DB","society_master")
+PG_USER = os.getenv("PG_USER","society_master_user")
+PG_PASSWORD = os.getenv("PG_PASSWORD","eCGrmS9dFFk9NDFVr814wKEjERVhEdcc")
 
 
 # '''

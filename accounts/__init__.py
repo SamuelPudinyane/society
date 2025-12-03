@@ -22,12 +22,16 @@ load_dotenv()
 
 # Default to Postgres; override via env `DATABASE_URI`.
 # Example: postgresql+psycopg://user:password@host:5432/dbname
-DATABASE_URI = (
-    os.environ.get(
-        "DATABASE_URI",
-        "postgresql+psycopg://postgres:postgres@localhost:5432/newx"
-    )
-)
+## Local DB URI (commented out)
+# DATABASE_URI = (
+#     os.environ.get(
+#         "DATABASE_URI",
+#         "postgresql+psycopg://postgres:postgres@localhost:5432/newx"
+#     )
+# )
+
+# Use remote DB connection string
+DATABASE_URI = os.environ.get("DATABASE_URI")
 
 db = SQLAlchemy()
 migrate = Migrate()
