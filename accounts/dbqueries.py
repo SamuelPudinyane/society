@@ -1,6 +1,6 @@
 import json
 import os
-import psycopg2
+import psycopg
 from psycopg2 import errors as pg_errors
 from accounts import db
 from sqlalchemy import text
