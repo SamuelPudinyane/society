@@ -16,6 +16,7 @@ depends_on = None
 
 
 def upgrade():
+    op.execute('DROP TABLE IF EXISTS analytics_events CASCADE;')
     op.create_table(
         'analytics_events',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True, nullable=False),
