@@ -225,7 +225,7 @@ def track_event():
     session_id = _truncate(session_id, 64)
     ip = _truncate(ip, 64)
 
-    # Insert via psycopg2
+    # Insert via psycopg
     try:
         from accounts.dbqueries import get_connection
 

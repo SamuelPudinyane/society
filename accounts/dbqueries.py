@@ -22,9 +22,9 @@ PG_PASSWORD = os.getenv("PG_PASSWORD", "malvapudding78*")
 
 # '''
 def get_connection():
-    """Get a psycopg2 connection to Postgres."""
+    """Get a psycopg connection to Postgres."""
     try:
-        return psycopg2.connect(
+        return psycopg.connect(
             host=PG_HOST,
             port=PG_PORT,
             dbname=PG_DB,
@@ -45,7 +45,7 @@ def get_connection():
 
 # def get_connection():
 #     try:
-#         conn =(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
+#         conn =(f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_NAME}?sslmode=disable")
 #         engine = create_engine(conn)
 #         connection = engine.connect()
 #         print("✅ Database connection successful")
@@ -1138,7 +1138,7 @@ def get_users_with_profiles_by_id(user_id):
 
 def print_all_tables():
     try:
-        # Use psycopg2 to list tables in Postgres
+        # Use psycopg to list tables in Postgres
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
