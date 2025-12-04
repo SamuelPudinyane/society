@@ -508,7 +508,7 @@ def admin_analytics_data():
         time_filter = ""
         params = []
         if activity_window_minutes and isinstance(activity_window_minutes, (int, float)) and activity_window_minutes > 0:
-            time_filter = " AND created_at >= NOW() - INTERVAL %s"
+            time_filter = " AND created_at >= NOW() - (%s)::interval"
             params.append(f"{int(activity_window_minutes)} minutes")
 
         query_active = (
@@ -1315,7 +1315,7 @@ def innovation():
         # profile=get_profile_by_user_id(user['id'])
         # user['bio']=profile['bio']
 
-        return redirect(f"http://127.0.0.1:9000?user={id}")
+        return redirect(f"https://innovation-ee65.onrender.com?user={id}")
     else:
         return redirect(url_for("accounts.index"))
 
@@ -1343,7 +1343,7 @@ def inventory():
         if not id:
             return redirect(url_for("accounts.login"))
         # Redirect to another application running on a different server or port
-        return redirect(f"http://127.0.0.1:8000?user={id}")
+        return redirect(f"https://inventory-ba3p.onrender.com?user={id}")
     else:
         return redirect(url_for("accounts.index"))
 
