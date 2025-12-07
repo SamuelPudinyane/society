@@ -95,10 +95,10 @@
             </div>
             <div class="centre_nav">
                 <a href="{{ url_for('accounts.index') }}">Home</a>
-                <a href="{{ url_for('accounts.stem_app') }}">Virtual Reality</a>
+                <a href="#">Virtual Reality</a>
                 <a href="{{ url_for('accounts.inventory') }}">SMEs</a>
                 <a href="{{ url_for('accounts.innovation') }}">Innovation</a>
-                <a href="#">Careers</a>
+                <a href="{{ url_for('accounts.stem_app') }}">Careers</a>
                 {% if session.get('user') %}
                   <a href="{{ url_for('accounts.profile') }}">Update Profile</a>
                 {% endif %}
