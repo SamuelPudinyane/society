@@ -1343,7 +1343,7 @@ def inventory():
         if not id:
             return redirect(url_for("accounts.login"))
         # Redirect to another application running on a different server or port
-        return redirect(f"https://inventory-ba3p.onrender.com?user={id}")
+        return redirect(f"https://inventory-system-g3vz.onrender.com?user={id}")
     else:
         return redirect(url_for("accounts.index"))
 
