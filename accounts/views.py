@@ -1330,7 +1330,7 @@ def stem_app():
         profile = get_profile_by_user_id(id)
         if profile:
             user["bio"] = profile["bio"]
-        return redirect(f"http://127.0.0.1:7000?user={id}")
+        return redirect(f"https://stepp-application.onrender.com/index/?user={id}")
     else:
         return redirect(url_for("accounts.index"))
 
